@@ -2,39 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Yooga Pay Internal Operations System Design System
+All colors MUST be HSL based on Yooga brand identity.
 */
 
 @layer base {
   :root {
+    /* Yooga brand colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 210 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Yooga blue primary brand */
+    --primary: 208 92% 46%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 208 92% 40%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Yooga secondary colors */
+    --secondary: 210 17% 96%;
+    --secondary-foreground: 210 15% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 17% 96%;
+    --muted-foreground: 210 10% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 197 71% 92%;
+    --accent-foreground: 208 92% 46%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* System colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 210 17% 90%;
+    --input: 210 17% 95%;
+    --ring: 208 92% 46%;
 
     --radius: 0.5rem;
 
@@ -55,34 +66,50 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+    /* Gradients for Yooga brand */
+    --gradient-primary: linear-gradient(135deg, hsl(208 92% 46%), hsl(197 71% 55%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 17% 98%), hsl(210 17% 95%));
+    
+    /* Shadows with Yooga blue */
+    --shadow-card: 0 1px 3px 0 hsl(208 92% 46% / 0.1), 0 1px 2px 0 hsl(208 92% 46% / 0.06);
+    --shadow-elevated: 0 10px 25px -5px hsl(208 92% 46% / 0.1), 0 4px 6px -2px hsl(208 92% 46% / 0.05);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 210 15% 8%;
+    --foreground: 0 0% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 15% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 15% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 208 92% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 208 92% 60%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 15% 15%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 15% 15%;
+    --muted-foreground: 210 10% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 15% 15%;
+    --accent-foreground: 208 92% 55%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --success: 142 71% 55%;
+    --warning: 38 92% 60%;
+
+    --border: 210 15% 20%;
+    --input: 210 15% 15%;
+    --ring: 208 92% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +127,62 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-yooga {
+    @apply bg-primary text-primary-foreground hover:bg-primary-hover;
+    @apply px-4 py-2 rounded-md font-medium transition-colors;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .card-yooga {
+    @apply bg-card border border-border rounded-lg;
+    @apply shadow-card;
+  }
+
+  .input-yooga {
+    @apply bg-input border border-border rounded-md px-3 py-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
+  }
+
+  .table-yooga {
+    @apply w-full border-collapse border-spacing-0;
+  }
+
+  .table-yooga th {
+    @apply bg-muted text-muted-foreground font-medium px-4 py-3 text-left;
+    @apply border-b border-border;
+  }
+
+  .table-yooga td {
+    @apply px-4 py-3 border-b border-border;
+  }
+
+  .status-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-success {
+    @apply bg-success/10 text-success border border-success/20;
+  }
+
+  .status-warning {
+    @apply bg-warning/10 text-warning border border-warning/20;
+  }
+
+  .status-error {
+    @apply bg-destructive/10 text-destructive border border-destructive/20;
+  }
+
+  .status-pending {
+    @apply bg-muted text-muted-foreground border border-border;
   }
 }
