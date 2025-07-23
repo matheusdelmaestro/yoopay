@@ -19,10 +19,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   // Mock users for development (will be replaced by Supabase)
   const mockUsers = [
-    { email: "atendimento@yooga.com.br", password: "123456", role: "atendimento", name: "Ana Silva" },
-    { email: "pagamento@yooga.com.br", password: "123456", role: "pagamento", name: "Carlos Santos" },
-    { email: "financeiro@yooga.com.br", password: "123456", role: "financeiro", name: "Maria Costa" },
-    { email: "supervisor@yooga.com.br", password: "123456", role: "supervisor", name: "João Lima" },
+    { email: "atendimento@yooga.com.br", password: "xK%d^nhP5%@#$$@", role: "atendimento", name: "Ana Silva" },
+    { email: "pagamento@yooga.com.br", password: "xK%d^nhP5%@#$$@", role: "pagamento", name: "Carlos Santos" },
+    { email: "financeiro@yooga.com.br", password: "xK%d^nhP5%@#$$@", role: "financeiro", name: "Maria Costa" },
+    { email: "supervisor@yooga.com.br", password: "xK%d^nhP5%@#$$@", role: "supervisor", name: "João Lima" },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,7 +127,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 <p>supervisor@yooga.com.br</p>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Senha: 123456</p>
+            <p className="text-xs text-muted-foreground mt-2">Senha: xK%d^nhP5%@#$$@</p>
           </div>
         </CardContent>
       </Card>
