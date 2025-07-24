@@ -15,7 +15,7 @@ const Pendentes = ({ user }: PendentesProps) => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Pendentes</h1>
-        <p className="text-muted-foreground">Gerencie itens pendentes de aprovação</p>
+        <p className="text-muted-foreground">Consulte informações completas de credenciamento dos clientes</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

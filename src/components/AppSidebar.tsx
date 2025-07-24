@@ -41,10 +41,10 @@ interface AppSidebarProps {
 const menuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard, roles: ["atendimento", "pagamento", "financeiro", "supervisor"] },
   { title: "Cadastro", url: "/cadastro", icon: Users, roles: ["atendimento", "supervisor"] },
-  { title: "Pedidos", url: "/pedidos", icon: ShoppingCart, roles: ["atendimento", "pagamento", "supervisor"] },
+  { title: "Pedidos via PIX", url: "/pedidos", icon: ShoppingCart, roles: ["atendimento", "pagamento", "supervisor"] },
   { title: "Transações", url: "/transacoes", icon: CreditCard, roles: ["pagamento", "financeiro", "supervisor"] },
   { title: "Credenciamentos", url: "/credenciamentos", icon: Store, roles: ["pagamento", "supervisor"] },
-  { title: "Pendentes", url: "/pendentes", icon: AlertCircle, roles: ["pagamento", "supervisor"] },
+  { title: "Conferência", url: "/pendentes", icon: CheckCircle, roles: ["pagamento", "supervisor"] },
   { title: "Repasses", url: "/repasses", icon: FileText, roles: ["financeiro", "supervisor"] },
   { title: "Logs", url: "/logs", icon: History, roles: ["supervisor"] },
 ];
