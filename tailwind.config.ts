@@ -45,6 +45,22 @@ export default {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))'
 				},
+				'toast-success': {
+					DEFAULT: 'hsl(var(--toast-success))',
+					foreground: 'hsl(var(--toast-success-foreground))'
+				},
+				'toast-warning': {
+					DEFAULT: 'hsl(var(--toast-warning))',
+					foreground: 'hsl(var(--toast-warning-foreground))'
+				},
+				'toast-error': {
+					DEFAULT: 'hsl(var(--toast-error))',
+					foreground: 'hsl(var(--toast-error-foreground))'
+				},
+				'toast-info': {
+					DEFAULT: 'hsl(var(--toast-info))',
+					foreground: 'hsl(var(--toast-info-foreground))'
+				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))'
