@@ -1,4 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Search, Download } from "lucide-react";
 
 interface User {
   email: string;
@@ -11,11 +16,38 @@ interface RepassesProps {
 }
 
 const Repasses = ({ user }: RepassesProps) => {
+  const [searchId, setSearchId] = useState("");
+  const [filteredRepasses, setFilteredRepasses] = useState([
+    { id: "REP001", cliente: "João Silva", valor: "R$ 1.250,00", data: "25/01/2025", hora: "14:30", status: "Concluído" },
+    { id: "REP002", cliente: "Maria Santos", valor: "R$ 890,50", data: "25/01/2025", hora: "13:15", status: "Concluído" },
+    { id: "REP003", cliente: "Pedro Costa", valor: "R$ 2.100,00", data: "25/01/2025", hora: "12:45", status: "Pendente" },
+    { id: "REP004", cliente: "Ana Lima", valor: "R$ 675,25", data: "24/01/2025", hora: "16:20", status: "Concluído" },
+    { id: "REP005", cliente: "Carlos Oliveira", valor: "R$ 1.480,00", data: "24/01/2025", hora: "15:10", status: "Concluído" },
+  ]);
+
+  const handleSearch = () => {
+    if (searchId.trim() === "") {
+      // Resetar para todos os repasses
+      setFilteredRepasses([
+        { id: "REP001", cliente: "João Silva", valor: "R$ 1.250,00", data: "25/01/2025", hora: "14:30", status: "Concluído" },
+        { id: "REP002", cliente: "Maria Santos", valor: "R$ 890,50", data: "25/01/2025", hora: "13:15", status: "Concluído" },
+        { id: "REP003", cliente: "Pedro Costa", valor: "R$ 2.100,00", data: "25/01/2025", hora: "12:45", status: "Pendente" },
+        { id: "REP004", cliente: "Ana Lima", valor: "R$ 675,25", data: "24/01/2025", hora: "16:20", status: "Concluído" },
+        { id: "REP005", cliente: "Carlos Oliveira", valor: "R$ 1.480,00", data: "24/01/2025", hora: "15:10", status: "Concluído" },
+      ]);
+    } else {
+      const filtered = filteredRepasses.filter(repasse => 
+        repasse.id.toLowerCase().includes(searchId.toLowerCase())
+      );
+      setFilteredRepasses(filtered);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Repasses</h1>
-        <p className="text-muted-foreground">Consulte repasses financeiros realizados para os clientes</p>
+        <h1 className="text-2xl font-bold">Repasses Diários</h1>
+        <p className="text-muted-foreground">Consulte todos os repasses financeiros realizados para os clientes</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -60,12 +92,76 @@ const Repasses = ({ user }: RepassesProps) => {
         </Card>
       </div>
 
+      {/* Busca por ID */}
       <Card>
         <CardHeader>
-          <CardTitle>Histórico de Repasses</CardTitle>
+          <CardTitle>Buscar Repasse por ID</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Relatório de repasses em desenvolvimento...</p>
+          <div className="flex gap-4">
+            <Input
+              placeholder="Digite o ID do repasse (ex: REP001)"
+              value={searchId}
+              onChange={(e) => setSearchId(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={handleSearch} className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              Buscar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Lista de Repasses */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Histórico de Repasses Diários</CardTitle>
+            <Button variant="outline" className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Exportar
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead>Hora</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredRepasses.map((repasse) => (
+                <TableRow key={repasse.id}>
+                  <TableCell className="font-medium">{repasse.id}</TableCell>
+                  <TableCell>{repasse.cliente}</TableCell>
+                  <TableCell>{repasse.valor}</TableCell>
+                  <TableCell>{repasse.data}</TableCell>
+                  <TableCell>{repasse.hora}</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      repasse.status === "Concluído" 
+                        ? "bg-success/10 text-success" 
+                        : "bg-warning/10 text-warning"
+                    }`}>
+                      {repasse.status}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {filteredRepasses.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              Nenhum repasse encontrado para o ID "{searchId}"
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
