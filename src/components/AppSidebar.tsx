@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  BarChart3
 } from "lucide-react";
 import {
   Sidebar,
@@ -46,6 +47,7 @@ const menuItems = [
   { title: "Credenciamentos", url: "/credenciamentos", icon: Store, roles: ["pagamento", "supervisor"] },
   { title: "Pendentes", url: "/pendentes", icon: AlertCircle, roles: ["pagamento", "supervisor"] },
   { title: "Repasses", url: "/repasses", icon: FileText, roles: ["financeiro", "supervisor"] },
+  { title: "Relatórios", url: "/relatorios", icon: BarChart3, roles: ["financeiro", "supervisor"] },
   { title: "Logs", url: "/logs", icon: History, roles: ["supervisor"] },
 ];
 

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Save, User } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Search, Save, User, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface User {
@@ -58,6 +59,11 @@ const Cadastro = ({ user }: CadastroProps) => {
     documentoBeneficiario: "",
   });
 
+  const [configTaxa, setConfigTaxa] = useState({
+    valor: "",
+    tipo: "porcentagem", // "porcentagem" ou "fixo"
+  });
+
   useEffect(() => {
     if (bancoSelecionado) {
       const banco = bancos.find(b => b.nome === bancoSelecionado);
@@ -109,6 +115,12 @@ const Cadastro = ({ user }: CadastroProps) => {
       setCliente(clienteEncontrado);
       setDadosBancarios(clienteEncontrado.dadosBancarios);
       setBancoSelecionado(clienteEncontrado.dadosBancarios.nomeBanco);
+      
+      // Carregar configuração de taxa existente (simulado)
+      setConfigTaxa({
+        valor: "2.5",
+        tipo: "porcentagem"
+      });
       
       toast({
         title: "Cliente encontrado",
@@ -325,6 +337,75 @@ const Cadastro = ({ user }: CadastroProps) => {
               <Button onClick={salvarDados} className="flex items-center gap-2">
                 <Save className="w-4 h-4" />
                 Salvar Alterações
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Configuração de Taxa */}
+      {cliente && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calculator className="w-5 h-5" />
+              Configuração de Taxa
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="valorTaxa">Valor da Taxa</Label>
+                <Input
+                  id="valorTaxa"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={configTaxa.valor}
+                  onChange={(e) => setConfigTaxa(prev => ({ ...prev, valor: e.target.value }))}
+                  placeholder={configTaxa.tipo === "porcentagem" ? "2.5" : "10.00"}
+                />
+              </div>
+              <div>
+                <Label>Tipo da Taxa</Label>
+                <RadioGroup
+                  value={configTaxa.tipo}
+                  onValueChange={(value) => setConfigTaxa(prev => ({ ...prev, tipo: value }))}
+                  className="flex flex-col space-y-2 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="porcentagem" id="porcentagem" />
+                    <Label htmlFor="porcentagem">Porcentagem (%)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="fixo" id="fixo" />
+                    <Label htmlFor="fixo">Valor Fixo (R$)</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </div>
+            
+            {configTaxa.valor && (
+              <div className="bg-muted p-3 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Preview:</strong> 
+                  {configTaxa.tipo === "porcentagem" 
+                    ? ` ${configTaxa.valor}% sobre cada venda`
+                    : ` R$ ${configTaxa.valor} por venda`
+                  }
+                </p>
+              </div>
+            )}
+            
+            <div className="flex justify-end pt-4">
+              <Button onClick={() => {
+                toast({
+                  title: "Taxa configurada",
+                  description: `Taxa de ${configTaxa.tipo === "porcentagem" ? configTaxa.valor + "%" : "R$ " + configTaxa.valor} salva com sucesso.`,
+                });
+              }} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                Salvar Taxa
               </Button>
             </div>
           </CardContent>

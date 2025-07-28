@@ -13,6 +13,7 @@ import Credenciamentos from "@/pages/Credenciamentos";
 import Pendentes from "@/pages/Pendentes";
 import Repasses from "@/pages/Repasses";
 import Logs from "@/pages/Logs";
+import Relatorios from "@/pages/Relatorios";
 
 interface User {
   email: string;
@@ -57,6 +58,8 @@ const Layout = () => {
         return <Pendentes user={user} />;
       case "/repasses":
         return <Repasses user={user} />;
+      case "/relatorios":
+        return <Relatorios user={user} />;
       case "/logs":
         return <Logs user={user} />;
       default:
