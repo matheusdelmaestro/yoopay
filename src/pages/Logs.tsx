@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Download, User, Clock, Edit } from "lucide-react";
+import { Search, Filter, Download, User, Clock, Edit, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface User {
   email: string;
@@ -26,7 +27,16 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Aprovou credenciamento do cliente João Santos (ID: CRED001)",
       data: "25/01/2025",
       hora: "14:35:22",
-      tipo: "aprovacao"
+      tipo: "aprovacao",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.100",
+        navegador: "Chrome 120.0.0",
+        sistemaOperacional: "Windows 11",
+        localizacao: "São Paulo, SP",
+        documentosAnalisados: ["RG", "CPF", "Comprovante de Residência"],
+        observacoes: "Cliente atendeu todos os requisitos para credenciamento",
+        valorLimite: "R$ 50.000,00"
+      }
     },
     {
       id: 2,
@@ -35,7 +45,18 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Processou repasse de R$ 1.250,00 para cliente Pedro Costa (REP003)",
       data: "25/01/2025",
       hora: "13:20:15",
-      tipo: "processamento"
+      tipo: "processamento",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.105",
+        navegador: "Firefox 120.0",
+        sistemaOperacional: "macOS Monterey",
+        localizacao: "Rio de Janeiro, RJ",
+        valorTransacao: "R$ 1.250,00",
+        clienteDestino: "Pedro Costa",
+        contaBancaria: "Banco do Brasil - Ag: 1234-5, Conta: 12345-6",
+        chavePix: "pedro.costa@email.com",
+        observacoes: "Repasse processado com sucesso via API bancária"
+      }
     },
     {
       id: 3,
@@ -44,7 +65,18 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Rejeitou solicitação de pagamento PIX001234 - Documentos pendentes",
       data: "25/01/2025",
       hora: "12:45:08",
-      tipo: "rejeicao"
+      tipo: "rejeicao",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.110",
+        navegador: "Chrome 120.0.0",
+        sistemaOperacional: "Windows 10",
+        localizacao: "Belo Horizonte, MG",
+        solicitacaoId: "PIX001234",
+        motivoRejeicao: "Documentos pendentes",
+        documentosFaltando: ["Comprovante de Renda", "Declaração IR"],
+        valorSolicitado: "R$ 5.000,00",
+        observacoes: "Cliente precisa enviar documentação complementar para análise"
+      }
     },
     {
       id: 4,
@@ -53,7 +85,18 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Alterou status da transação TXN5678 de 'Pendente' para 'Processando'",
       data: "25/01/2025",
       hora: "11:30:44",
-      tipo: "alteracao"
+      tipo: "alteracao",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.115",
+        navegador: "Chrome 120.0.0",
+        sistemaOperacional: "Ubuntu 22.04",
+        localizacao: "Curitiba, PR",
+        transacaoId: "TXN5678",
+        statusAnterior: "Pendente",
+        statusNovo: "Processando",
+        motivoAlteracao: "Documentação aprovada pela equipe de compliance",
+        observacoes: "Transação liberada para processamento automático"
+      }
     },
     {
       id: 5,
@@ -62,7 +105,19 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Cadastrou novo cliente: Marina Fernandes (CPF: ***.123.456-**)",
       data: "24/01/2025",
       hora: "16:15:33",
-      tipo: "cadastro"
+      tipo: "cadastro",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.120",
+        navegador: "Safari 17.0",
+        sistemaOperacional: "iOS 17.0",
+        localizacao: "Salvador, BA",
+        nomeCompleto: "Marina Fernandes Silva",
+        cpf: "123.456.789-00",
+        email: "marina.fernandes@email.com",
+        telefone: "(71) 99999-9999",
+        endereco: "Rua das Flores, 123 - Salvador/BA",
+        observacoes: "Cliente cadastrado com todos os documentos válidos"
+      }
     },
     {
       id: 6,
@@ -71,7 +126,19 @@ const Logs = ({ user }: LogsProps) => {
       detalhes: "Aprovou transação de R$ 2.890,50 para cliente Tech Solutions LTDA",
       data: "24/01/2025",
       hora: "15:22:17",
-      tipo: "aprovacao"
+      tipo: "aprovacao",
+      detalhesCompletos: {
+        ipOrigem: "192.168.1.125",
+        navegador: "Edge 120.0.0",
+        sistemaOperacional: "Windows 11",
+        localizacao: "Brasília, DF",
+        clienteEmpresa: "Tech Solutions LTDA",
+        cnpj: "12.345.678/0001-99",
+        valorTransacao: "R$ 2.890,50",
+        tipoTransacao: "Transferência PIX",
+        motivoAprovacao: "Transação dentro dos limites estabelecidos",
+        observacoes: "Aprovação automática por valor e histórico do cliente"
+      }
     }
   ]);
 
@@ -185,6 +252,7 @@ const Logs = ({ user }: LogsProps) => {
                 <TableHead>Data</TableHead>
                 <TableHead>Hora</TableHead>
                 <TableHead>Tipo</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -199,6 +267,78 @@ const Logs = ({ user }: LogsProps) => {
                     <Badge className={getActionBadgeColor(log.tipo)}>
                       {log.tipo}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle>Detalhes do Log - {log.acao}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-semibold mb-2">Informações Básicas</h4>
+                              <div className="space-y-2 text-sm">
+                                <div><strong>Usuário:</strong> {log.usuario}</div>
+                                <div><strong>Ação:</strong> {log.acao}</div>
+                                <div><strong>Data/Hora:</strong> {log.data} às {log.hora}</div>
+                                <div><strong>Tipo:</strong> 
+                                  <Badge className={`ml-2 ${getActionBadgeColor(log.tipo)}`}>
+                                    {log.tipo}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold mb-2">Informações Técnicas</h4>
+                              <div className="space-y-2 text-sm">
+                                <div><strong>IP de Origem:</strong> {log.detalhesCompletos.ipOrigem}</div>
+                                <div><strong>Navegador:</strong> {log.detalhesCompletos.navegador}</div>
+                                <div><strong>Sistema:</strong> {log.detalhesCompletos.sistemaOperacional}</div>
+                                <div><strong>Localização:</strong> {log.detalhesCompletos.localizacao}</div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-semibold mb-2">Detalhes da Ação</h4>
+                            <p className="text-sm bg-muted p-3 rounded">{log.detalhes}</p>
+                          </div>
+
+                          {/* Informações específicas por tipo */}
+                          <div>
+                            <h4 className="font-semibold mb-2">Informações Específicas</h4>
+                            <div className="space-y-2 text-sm bg-muted/50 p-3 rounded">
+                              {Object.entries(log.detalhesCompletos).map(([key, value]) => {
+                                if (["ipOrigem", "navegador", "sistemaOperacional", "localizacao"].includes(key)) {
+                                  return null;
+                                }
+                                return (
+                                  <div key={key}>
+                                    <strong className="capitalize">{key.replace(/([A-Z])/g, ' $1')}:</strong>{" "}
+                                    {Array.isArray(value) ? value.join(", ") : value}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {log.detalhesCompletos.observacoes && (
+                            <div>
+                              <h4 className="font-semibold mb-2">Observações</h4>
+                              <p className="text-sm bg-info/10 text-info p-3 rounded border border-info/20">
+                                {log.detalhesCompletos.observacoes}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}

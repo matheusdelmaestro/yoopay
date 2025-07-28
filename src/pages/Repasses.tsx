@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Download } from "lucide-react";
+import { Search, Download, FileDown } from "lucide-react";
 
 interface User {
   email: string;
@@ -134,6 +134,7 @@ const Repasses = ({ user }: RepassesProps) => {
                 <TableHead>Data</TableHead>
                 <TableHead>Hora</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -152,6 +153,24 @@ const Repasses = ({ user }: RepassesProps) => {
                     }`}>
                       {repasse.status}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    {repasse.status === "Concluído" && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0"
+                        onClick={() => {
+                          // Simular download do comprovante
+                          const link = document.createElement('a');
+                          link.href = `data:text/plain;charset=utf-8,Comprovante de Repasse\nID: ${repasse.id}\nCliente: ${repasse.cliente}\nValor: ${repasse.valor}\nData: ${repasse.data} ${repasse.hora}`;
+                          link.download = `comprovante-${repasse.id}.txt`;
+                          link.click();
+                        }}
+                      >
+                        <FileDown className="h-4 w-4" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
