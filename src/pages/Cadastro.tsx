@@ -143,13 +143,13 @@ const Cadastro = ({ user }: CadastroProps) => {
         if (!clienteEncontrado) {
           console.log('Verificando se o próprio objeto é o cliente');
           console.log('data.id:', data.id, 'clienteId:', clienteId);
-          console.log('data.codigo:', data.codigo);
-          console.log('data.documento:', data.documento);
+          console.log('data.originId:', data.originId);
+          console.log('data.document:', data.document);
           
           if (data.id === clienteId ||
             data.id === parseInt(clienteId) ||
-            data.codigo === clienteId ||
-            data.documento === clienteId) {
+            data.originId === clienteId ||
+            data.document === clienteId) {
             clienteEncontrado = data;
             console.log('Cliente encontrado no próprio objeto!');
           }
@@ -163,21 +163,21 @@ const Cadastro = ({ user }: CadastroProps) => {
         throw new Error("Cliente não encontrado na base de dados");
       }
       const clienteFormatado = {
-        id: clienteEncontrado.id || clienteEncontrado.codigo || clienteId,
-        nome: clienteEncontrado.nome || clienteEncontrado.razaoSocial || clienteEncontrado.nomeFantasia || "Nome não informado",
-        documento: clienteEncontrado.documento || clienteEncontrado.cpfCnpj || "Documento não informado",
-        email: clienteEncontrado.email || "E-mail não informado",
-        telefone: clienteEncontrado.telefone || clienteEncontrado.celular || "Telefone não informado",
+        id: clienteEncontrado.id || clienteEncontrado.originId || clienteId,
+        nome: clienteEncontrado.tradeName || clienteEncontrado.businessName || "Nome não informado",
+        documento: clienteEncontrado.document || "Documento não informado",
+        email: "E-mail não informado", // API não retorna email
+        telefone: "Telefone não informado", // API não retorna telefone
         dadosBancarios: {
-          nomeBanco: clienteEncontrado.dadosBancarios?.nomeBanco || "",
-          numeroBanco: clienteEncontrado.dadosBancarios?.numeroBanco || "",
-          agencia: clienteEncontrado.dadosBancarios?.agencia || "",
-          conta: clienteEncontrado.dadosBancarios?.conta || "",
-          digitoConta: clienteEncontrado.dadosBancarios?.digitoConta || "",
-          chavePix: clienteEncontrado.dadosBancarios?.chavePix || "",
-          tipoChave: clienteEncontrado.dadosBancarios?.tipoChave || "",
-          nomeBeneficiario: clienteEncontrado.dadosBancarios?.nomeBeneficiario || "",
-          documentoBeneficiario: clienteEncontrado.dadosBancarios?.documentoBeneficiario || "",
+          nomeBanco: clienteEncontrado.bank?.bankName || "",
+          numeroBanco: clienteEncontrado.bank?.bankNumber || "",
+          agencia: clienteEncontrado.bank?.agency || "",
+          conta: clienteEncontrado.bank?.account || "",
+          digitoConta: clienteEncontrado.bank?.accountDigit || "",
+          chavePix: clienteEncontrado.bank?.pixKey || "",
+          tipoChave: clienteEncontrado.bank?.pixKeyType?.toLowerCase() || "",
+          nomeBeneficiario: clienteEncontrado.bank?.holderName || "",
+          documentoBeneficiario: clienteEncontrado.bank?.holderDocument || "",
         }
       };
       setCliente(clienteFormatado);
