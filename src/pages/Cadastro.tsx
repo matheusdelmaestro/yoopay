@@ -92,45 +92,74 @@ const Cadastro = ({ user }: CadastroProps) => {
       }
       const data = await response.json();
       
+      // Debug: Vamos ver a estrutura dos dados retornados
+      console.log('Dados retornados da API:', data);
+      console.log('Tipo dos dados:', typeof data);
+      console.log('É array?', Array.isArray(data));
+      console.log('ID buscado:', clienteId);
+      
       // Verificar se data é um array ou objeto
       let clienteEncontrado = null;
       
       if (Array.isArray(data)) {
+        console.log('Dados são um array com', data.length, 'itens');
+        console.log('Primeiro item do array:', data[0]);
+        
         // Se for array, usar find normalmente
-        clienteEncontrado = data.find((item: any) =>
-          item.id === clienteId ||
-          item.id === parseInt(clienteId) ||
-          item.codigo === clienteId ||
-          item.documento === clienteId
-        );
+        clienteEncontrado = data.find((item: any) => {
+          console.log('Verificando item:', item);
+          const match = item.id === clienteId ||
+            item.id === parseInt(clienteId) ||
+            item.codigo === clienteId ||
+            item.documento === clienteId;
+          console.log('Match encontrado?', match);
+          return match;
+        });
       } else if (data && typeof data === 'object') {
+        console.log('Dados são um objeto');
+        console.log('Chaves do objeto:', Object.keys(data));
+        
         // Se for objeto, verificar se tem uma propriedade que contém os dados
         // Possíveis estruturas: { data: [...] }, { results: [...] }, { items: [...] }
         const possibleArrays = [data.data, data.results, data.items, data.clientes, data.list];
         
         for (const arr of possibleArrays) {
           if (Array.isArray(arr)) {
-            clienteEncontrado = arr.find((item: any) =>
-              item.id === clienteId ||
-              item.id === parseInt(clienteId) ||
-              item.codigo === clienteId ||
-              item.documento === clienteId
-            );
+            console.log('Encontrou array em uma das propriedades:', arr);
+            clienteEncontrado = arr.find((item: any) => {
+              console.log('Verificando item do array aninhado:', item);
+              const match = item.id === clienteId ||
+                item.id === parseInt(clienteId) ||
+                item.codigo === clienteId ||
+                item.documento === clienteId;
+              console.log('Match encontrado?', match);
+              return match;
+            });
             if (clienteEncontrado) break;
           }
         }
         
         // Se não encontrou em arrays aninhados, verificar se o próprio objeto é o cliente
-        if (!clienteEncontrado && (
-          data.id === clienteId ||
-          data.id === parseInt(clienteId) ||
-          data.codigo === clienteId ||
-          data.documento === clienteId
-        )) {
-          clienteEncontrado = data;
+        if (!clienteEncontrado) {
+          console.log('Verificando se o próprio objeto é o cliente');
+          console.log('data.id:', data.id, 'clienteId:', clienteId);
+          console.log('data.codigo:', data.codigo);
+          console.log('data.documento:', data.documento);
+          
+          if (data.id === clienteId ||
+            data.id === parseInt(clienteId) ||
+            data.codigo === clienteId ||
+            data.documento === clienteId) {
+            clienteEncontrado = data;
+            console.log('Cliente encontrado no próprio objeto!');
+          }
         }
       }
+      
+      console.log('Resultado final da busca:', clienteEncontrado);
+      
       if (!clienteEncontrado) {
+        console.log('ERRO: Cliente não foi encontrado com nenhum dos critérios de busca');
         throw new Error("Cliente não encontrado na base de dados");
       }
       const clienteFormatado = {
@@ -447,4 +476,4 @@ const Cadastro = ({ user }: CadastroProps) => {
   );
 };
 export default Cadastro;
-//atualizaçãov3
+//atualizaçãov4
