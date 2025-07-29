@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ interface CadastroProps {
   user: User;
 }
 
-// Lista de bancos com seus códigos
 const bancos = [
   { codigo: "001", nome: "Banco do Brasil" },
   { codigo: "104", nome: "Caixa Econômica Federal" },
@@ -61,7 +61,7 @@ const Cadastro = ({ user }: CadastroProps) => {
 
   const [configTaxa, setConfigTaxa] = useState({
     valor: "",
-    tipo: "porcentagem", // "porcentagem" ou "fixo"
+    tipo: "porcentagem",
   });
 
   useEffect(() => {
@@ -93,7 +93,7 @@ const Cadastro = ({ user }: CadastroProps) => {
       const response = await fetch('https://payment.yooga.com.br/marketplace/121304/list', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
+          'Authorization': 'Bearer YOUR_TOKEN_HERE',
           'Content-Type': 'application/json'
         },
         body: ''
@@ -104,10 +104,9 @@ const Cadastro = ({ user }: CadastroProps) => {
       }
 
       const data = await response.json();
-      
-      // Buscar cliente específico na lista retornada pela API
-      const clienteEncontrado = data.find((item: any) => 
-        item.id === clienteId || 
+
+      const clienteEncontrado = data.find((item: any) =>
+        item.id === clienteId ||
         item.id === parseInt(clienteId) ||
         item.codigo === clienteId ||
         item.documento === clienteId
@@ -117,7 +116,6 @@ const Cadastro = ({ user }: CadastroProps) => {
         throw new Error("Cliente não encontrado na base de dados");
       }
 
-      // Mapear dados da API para o formato esperado pela interface
       const clienteFormatado = {
         id: clienteEncontrado.id || clienteEncontrado.codigo || clienteId,
         nome: clienteEncontrado.nome || clienteEncontrado.razaoSocial || clienteEncontrado.nomeFantasia || "Nome não informado",
@@ -142,13 +140,12 @@ const Cadastro = ({ user }: CadastroProps) => {
       if (clienteFormatado.dadosBancarios.nomeBanco) {
         setBancoSelecionado(clienteFormatado.dadosBancarios.nomeBanco);
       }
-      
-      // Carregar configuração de taxa existente (se disponível na API)
+
       setConfigTaxa({
         valor: clienteEncontrado.taxa?.valor || "2.5",
         tipo: clienteEncontrado.taxa?.tipo || "porcentagem"
       });
-      
+
       toast({
         title: "Cliente encontrado",
         description: `Cliente ${clienteFormatado.nome} carregado com sucesso.`,
