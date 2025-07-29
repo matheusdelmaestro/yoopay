@@ -90,46 +90,74 @@ const Cadastro = ({ user }: CadastroProps) => {
 
     setLoading(true);
     try {
-      // Simulação de busca - substitua pela API real
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('https://payment.yooga.com.br/marketplace/121304/list', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      const clienteEncontrado = {
-        id: clienteId,
-        nome: "João Silva Ltda",
-        documento: "12.345.678/0001-90",
-        email: "joao@empresa.com",
-        telefone: "(11) 99999-9999",
+      // Buscar cliente específico na lista retornada pela API
+      const clienteEncontrado = data.find((item: any) => 
+        item.id === clienteId || 
+        item.id === parseInt(clienteId) ||
+        item.codigo === clienteId ||
+        item.documento === clienteId
+      );
+
+      if (!clienteEncontrado) {
+        throw new Error("Cliente não encontrado na base de dados");
+      }
+
+      // Mapear dados da API para o formato esperado pela interface
+      const clienteFormatado = {
+        id: clienteEncontrado.id || clienteEncontrado.codigo || clienteId,
+        nome: clienteEncontrado.nome || clienteEncontrado.razaoSocial || clienteEncontrado.nomeFantasia || "Nome não informado",
+        documento: clienteEncontrado.documento || clienteEncontrado.cpfCnpj || "Documento não informado",
+        email: clienteEncontrado.email || "E-mail não informado",
+        telefone: clienteEncontrado.telefone || clienteEncontrado.celular || "Telefone não informado",
         dadosBancarios: {
-          nomeBanco: "Banco do Brasil",
-          numeroBanco: "001",
-          agencia: "1234-5",
-          conta: "12345-6",
-          digitoConta: "7",
-          chavePix: "12345678000190",
-          tipoChave: "cnpj",
-          nomeBeneficiario: "João Silva",
-          documentoBeneficiario: "123.456.789-01",
+          nomeBanco: clienteEncontrado.dadosBancarios?.nomeBanco || "",
+          numeroBanco: clienteEncontrado.dadosBancarios?.numeroBanco || "",
+          agencia: clienteEncontrado.dadosBancarios?.agencia || "",
+          conta: clienteEncontrado.dadosBancarios?.conta || "",
+          digitoConta: clienteEncontrado.dadosBancarios?.digitoConta || "",
+          chavePix: clienteEncontrado.dadosBancarios?.chavePix || "",
+          tipoChave: clienteEncontrado.dadosBancarios?.tipoChave || "",
+          nomeBeneficiario: clienteEncontrado.dadosBancarios?.nomeBeneficiario || "",
+          documentoBeneficiario: clienteEncontrado.dadosBancarios?.documentoBeneficiario || "",
         }
       };
 
-      setCliente(clienteEncontrado);
-      setDadosBancarios(clienteEncontrado.dadosBancarios);
-      setBancoSelecionado(clienteEncontrado.dadosBancarios.nomeBanco);
+      setCliente(clienteFormatado);
+      setDadosBancarios(clienteFormatado.dadosBancarios);
+      if (clienteFormatado.dadosBancarios.nomeBanco) {
+        setBancoSelecionado(clienteFormatado.dadosBancarios.nomeBanco);
+      }
       
-      // Carregar configuração de taxa existente (simulado)
+      // Carregar configuração de taxa existente (se disponível na API)
       setConfigTaxa({
-        valor: "2.5",
-        tipo: "porcentagem"
+        valor: clienteEncontrado.taxa?.valor || "2.5",
+        tipo: clienteEncontrado.taxa?.tipo || "porcentagem"
       });
       
       toast({
         title: "Cliente encontrado",
-        description: `Cliente ${clienteEncontrado.nome} carregado com sucesso.`,
+        description: `Cliente ${clienteFormatado.nome} carregado com sucesso.`,
       });
     } catch (error) {
+      console.error("Erro ao buscar cliente:", error);
       toast({
         title: "Erro",
-        description: "Cliente não encontrado ou erro na busca.",
+        description: error instanceof Error ? error.message : "Cliente não encontrado ou erro na busca.",
         variant: "destructive",
       });
     } finally {
