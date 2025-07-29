@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import { Search, Save, User, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 interface User {
@@ -55,6 +56,11 @@ const Cadastro = ({ user }: CadastroProps) => {
   const [configTaxa, setConfigTaxa] = useState({
     valor: "",
     tipo: "porcentagem",
+  });
+  const [taxaPix, setTaxaPix] = useState({
+    valor: "",
+    tipo: "porcentagem",
+    ativada: false,
   });
   useEffect(() => {
     if (bancoSelecionado) {
@@ -162,14 +168,30 @@ const Cadastro = ({ user }: CadastroProps) => {
         console.log('ERRO: Cliente não foi encontrado com nenhum dos critérios de busca');
         throw new Error("Cliente não encontrado na base de dados");
       }
+      // Processar informações de taxa PIX
+      const pixDriver = clienteEncontrado.drivers?.find((driver: any) => 
+        driver.methods?.some((method: any) => method.name === "PIX")
+      );
+      const pixMethod = pixDriver?.methods?.find((method: any) => method.name === "PIX");
+      
+      // Mapear nome do banco da API para a lista local
+      const bancoMapping: { [key: string]: string } = {
+        "NUBANK": "Nu Pagamentos (Nubank)",
+        "ITAU": "Itaú Unibanco",
+        "BRADESCO": "Bradesco",
+        "SANTANDER": "Santander",
+        "BANCO DO BRASIL": "Banco do Brasil",
+        "CAIXA": "Caixa Econômica Federal"
+      };
+      
+      const nomeBancoFormatado = bancoMapping[clienteEncontrado.bank?.bankName] || clienteEncontrado.bank?.bankName || "";
+      
       const clienteFormatado = {
         id: clienteEncontrado.id || clienteEncontrado.originId || clienteId,
         nome: clienteEncontrado.tradeName || clienteEncontrado.businessName || "Nome não informado",
         documento: clienteEncontrado.document || "Documento não informado",
-        email: "E-mail não informado", // API não retorna email
-        telefone: "Telefone não informado", // API não retorna telefone
         dadosBancarios: {
-          nomeBanco: clienteEncontrado.bank?.bankName || "",
+          nomeBanco: nomeBancoFormatado,
           numeroBanco: clienteEncontrado.bank?.bankNumber || "",
           agencia: clienteEncontrado.bank?.agency || "",
           conta: clienteEncontrado.bank?.account || "",
@@ -185,6 +207,19 @@ const Cadastro = ({ user }: CadastroProps) => {
       if (clienteFormatado.dadosBancarios.nomeBanco) {
         setBancoSelecionado(clienteFormatado.dadosBancarios.nomeBanco);
       }
+      
+      // Configurar taxa PIX baseada nos dados da API
+      if (pixMethod) {
+        const valorTaxa = pixMethod.feeValue || pixMethod.transactionFeeValue || "";
+        const tipoTaxa = pixMethod.feeType === "VALUE" || pixMethod.transactionFeeType === "VALUE" ? "fixo" : "porcentagem";
+        
+        setTaxaPix({
+          valor: valorTaxa.toString(),
+          tipo: tipoTaxa,
+          ativada: pixMethod.enabled || false
+        });
+      }
+      
       setConfigTaxa({
         valor: clienteEncontrado.taxa?.valor || "2.5",
         tipo: clienteEncontrado.taxa?.tipo || "porcentagem"
@@ -280,12 +315,42 @@ const Cadastro = ({ user }: CadastroProps) => {
                 <Input value={cliente.documento} disabled />
               </div>
               <div>
-                <Label>E-mail</Label>
-                <Input value={cliente.email} disabled />
+                <Label>Taxa PIX Atual</Label>
+                <div className="flex items-center justify-between border rounded-lg p-3 bg-muted/20">
+                  <div>
+                    <span className="text-sm font-medium">
+                      {taxaPix.valor && (
+                        taxaPix.tipo === "fixo" 
+                          ? `R$ ${taxaPix.valor}` 
+                          : `${taxaPix.valor}%`
+                      )}
+                      {!taxaPix.valor && "Taxa não configurada"}
+                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      {taxaPix.tipo === "fixo" ? "Valor fixo por transação" : "Porcentagem sobre valor"}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="taxaPixSwitch" className="text-sm">
+                      {taxaPix.ativada ? "Ativa" : "Inativa"}
+                    </Label>
+                    <Switch
+                      id="taxaPixSwitch"
+                      checked={taxaPix.ativada}
+                      onCheckedChange={(checked) => 
+                        setTaxaPix(prev => ({ ...prev, ativada: checked }))
+                      }
+                    />
+                  </div>
+                </div>
               </div>
               <div>
-                <Label>Telefone</Label>
-                <Input value={cliente.telefone} disabled />
+                <Label>Status da Configuração</Label>
+                <Input 
+                  value={taxaPix.ativada ? "PIX Habilitado" : "PIX Desabilitado"} 
+                  disabled 
+                  className={taxaPix.ativada ? "text-green-600" : "text-red-600"}
+                />
               </div>
             </div>
           </CardContent>
