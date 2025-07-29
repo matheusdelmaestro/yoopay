@@ -8,17 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, Save, User, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
 interface User {
   email: string;
   role: string;
   name: string;
 }
-
 interface CadastroProps {
   user: User;
 }
-
 const bancos = [
   { codigo: "001", nome: "Banco do Brasil" },
   { codigo: "104", nome: "Caixa Econômica Federal" },
@@ -30,7 +27,6 @@ const bancos = [
   { codigo: "290", nome: "PagSeguro Internet" },
   { codigo: "323", nome: "Mercado Pago" },
 ];
-
 const tiposChavePix = [
   { value: "cpf", label: "CPF" },
   { value: "cnpj", label: "CNPJ" },
@@ -38,7 +34,6 @@ const tiposChavePix = [
   { value: "telefone", label: "Telefone" },
   { value: "aleatoria", label: "Chave Aleatória" },
 ];
-
 const Cadastro = ({ user }: CadastroProps) => {
   const [clienteId, setClienteId] = useState("");
   const [cliente, setCliente] = useState<any>(null);
@@ -46,7 +41,6 @@ const Cadastro = ({ user }: CadastroProps) => {
   const [bancoSelecionado, setBancoSelecionado] = useState("");
   const [numerobanco, setNumeroBank] = useState("");
   const { toast } = useToast();
-
   const [dadosBancarios, setDadosBancarios] = useState({
     nomeBanco: "",
     numeroBanco: "",
@@ -58,12 +52,10 @@ const Cadastro = ({ user }: CadastroProps) => {
     nomeBeneficiario: "",
     documentoBeneficiario: "",
   });
-
   const [configTaxa, setConfigTaxa] = useState({
     valor: "",
     tipo: "porcentagem",
   });
-
   useEffect(() => {
     if (bancoSelecionado) {
       const banco = bancos.find(b => b.nome === bancoSelecionado);
@@ -77,7 +69,6 @@ const Cadastro = ({ user }: CadastroProps) => {
       }
     }
   }, [bancoSelecionado]);
-
   const buscarCliente = async () => {
     if (!clienteId.trim()) {
       toast({
@@ -87,35 +78,28 @@ const Cadastro = ({ user }: CadastroProps) => {
       });
       return;
     }
-
     setLoading(true);
     try {
       const response = await fetch('https://payment.yooga.com.br/marketplace/121304/list', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
           'Content-Type': 'application/json'
-        },
-        body: ''
+        }
       });
-
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`);
       }
-
       const data = await response.json();
-
       const clienteEncontrado = data.find((item: any) =>
         item.id === clienteId ||
         item.id === parseInt(clienteId) ||
         item.codigo === clienteId ||
         item.documento === clienteId
       );
-
       if (!clienteEncontrado) {
         throw new Error("Cliente não encontrado na base de dados");
       }
-
       const clienteFormatado = {
         id: clienteEncontrado.id || clienteEncontrado.codigo || clienteId,
         nome: clienteEncontrado.nome || clienteEncontrado.razaoSocial || clienteEncontrado.nomeFantasia || "Nome não informado",
@@ -134,18 +118,15 @@ const Cadastro = ({ user }: CadastroProps) => {
           documentoBeneficiario: clienteEncontrado.dadosBancarios?.documentoBeneficiario || "",
         }
       };
-
       setCliente(clienteFormatado);
       setDadosBancarios(clienteFormatado.dadosBancarios);
       if (clienteFormatado.dadosBancarios.nomeBanco) {
         setBancoSelecionado(clienteFormatado.dadosBancarios.nomeBanco);
       }
-
       setConfigTaxa({
         valor: clienteEncontrado.taxa?.valor || "2.5",
         tipo: clienteEncontrado.taxa?.tipo || "porcentagem"
       });
-
       toast({
         title: "Cliente encontrado",
         description: `Cliente ${clienteFormatado.nome} carregado com sucesso.`,
@@ -161,7 +142,6 @@ const Cadastro = ({ user }: CadastroProps) => {
       setLoading(false);
     }
   };
-
   const salvarDados = async () => {
     try {
       // Simulação de salvamento - substitua pela API real
@@ -179,21 +159,18 @@ const Cadastro = ({ user }: CadastroProps) => {
       });
     }
   };
-
   const handleInputChange = (field: string, value: string) => {
     setDadosBancarios(prev => ({
       ...prev,
       [field]: value
     }));
   };
-
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Cadastro</h1>
         <p className="text-muted-foreground">Edite informações cadastrais dos clientes</p>
       </div>
-
       {/* Busca de Cliente */}
       <Card>
         <CardHeader>
@@ -221,7 +198,6 @@ const Cadastro = ({ user }: CadastroProps) => {
           </div>
         </CardContent>
       </Card>
-
       {/* Informações do Cliente */}
       {cliente && (
         <Card>
@@ -253,7 +229,6 @@ const Cadastro = ({ user }: CadastroProps) => {
           </CardContent>
         </Card>
       )}
-
       {/* Informações Bancárias */}
       {cliente && (
         <Card>
@@ -367,7 +342,6 @@ const Cadastro = ({ user }: CadastroProps) => {
           </CardContent>
         </Card>
       )}
-
       {/* Configuração de Taxa */}
       {cliente && (
         <Card>
@@ -439,5 +413,5 @@ const Cadastro = ({ user }: CadastroProps) => {
     </div>
   );
 };
-
 export default Cadastro;
+
