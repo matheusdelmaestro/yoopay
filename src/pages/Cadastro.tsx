@@ -177,14 +177,21 @@ const Cadastro = ({ user }: CadastroProps) => {
       // Mapear nome do banco da API para a lista local
       const bancoMapping: { [key: string]: string } = {
         "NUBANK": "Nu Pagamentos (Nubank)",
-        "ITAU": "Itaú Unibanco",
+        "ITAU": "Itaú Unibanco", 
         "BRADESCO": "Bradesco",
         "SANTANDER": "Santander",
         "BANCO DO BRASIL": "Banco do Brasil",
-        "CAIXA": "Caixa Econômica Federal"
+        "CAIXA": "Caixa Econômica Federal",
+        "ORIGINAL": "Banco Original",
+        "PAGSEGURO": "PagSeguro Internet",
+        "MERCADO PAGO": "Mercado Pago"
       };
       
       const nomeBancoFormatado = bancoMapping[clienteEncontrado.bank?.bankName] || clienteEncontrado.bank?.bankName || "";
+      
+      console.log('Banco da API:', clienteEncontrado.bank?.bankName);
+      console.log('Banco formatado:', nomeBancoFormatado);
+      console.log('Número do banco:', clienteEncontrado.bank?.bankNumber);
       
       const clienteFormatado = {
         id: clienteEncontrado.id || clienteEncontrado.originId || clienteId,
