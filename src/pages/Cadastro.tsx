@@ -91,12 +91,45 @@ const Cadastro = ({ user }: CadastroProps) => {
         throw new Error(`Erro na API: ${response.status}`);
       }
       const data = await response.json();
-      const clienteEncontrado = data.find((item: any) =>
-        item.id === clienteId ||
-        item.id === parseInt(clienteId) ||
-        item.codigo === clienteId ||
-        item.documento === clienteId
-      );
+      
+      // Verificar se data é um array ou objeto
+      let clienteEncontrado = null;
+      
+      if (Array.isArray(data)) {
+        // Se for array, usar find normalmente
+        clienteEncontrado = data.find((item: any) =>
+          item.id === clienteId ||
+          item.id === parseInt(clienteId) ||
+          item.codigo === clienteId ||
+          item.documento === clienteId
+        );
+      } else if (data && typeof data === 'object') {
+        // Se for objeto, verificar se tem uma propriedade que contém os dados
+        // Possíveis estruturas: { data: [...] }, { results: [...] }, { items: [...] }
+        const possibleArrays = [data.data, data.results, data.items, data.clientes, data.list];
+        
+        for (const arr of possibleArrays) {
+          if (Array.isArray(arr)) {
+            clienteEncontrado = arr.find((item: any) =>
+              item.id === clienteId ||
+              item.id === parseInt(clienteId) ||
+              item.codigo === clienteId ||
+              item.documento === clienteId
+            );
+            if (clienteEncontrado) break;
+          }
+        }
+        
+        // Se não encontrou em arrays aninhados, verificar se o próprio objeto é o cliente
+        if (!clienteEncontrado && (
+          data.id === clienteId ||
+          data.id === parseInt(clienteId) ||
+          data.codigo === clienteId ||
+          data.documento === clienteId
+        )) {
+          clienteEncontrado = data;
+        }
+      }
       if (!clienteEncontrado) {
         throw new Error("Cliente não encontrado na base de dados");
       }
@@ -414,5 +447,4 @@ const Cadastro = ({ user }: CadastroProps) => {
   );
 };
 export default Cadastro;
-
-//atualizaçãov2
+//atualizaçãov3
