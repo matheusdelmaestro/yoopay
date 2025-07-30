@@ -475,6 +475,18 @@ const Cadastro = ({ user }: CadastroProps) => {
                     maxLength={1}
                   />
                 </div>
+
+                
+                <div>
+                  <Label htmlFor="clienteId">IDI</Label>
+                  <Input
+                    id="clienteId"
+                    value={novoCredenciamento.clienteId}
+                    onChange={(e) => handleNovoCredenciamentoChange("clienteId", e.target.value)}
+                    placeholder="Digite o IDI"
+                    maxLength={1}
+                  />
+                </div>
                 
                 <div>
                   <Label htmlFor="novoTipoChave">Tipo da Chave PIX *</Label>
@@ -865,4 +877,4 @@ const Cadastro = ({ user }: CadastroProps) => {
   );
 };
 export default Cadastro;
-//atualizaçãov6
+//atualizaçãov7
