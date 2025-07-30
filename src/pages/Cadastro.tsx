@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Search, Save, User, Calculator } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Search, Save, User, Calculator, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 interface User {
   email: string;
@@ -41,6 +42,18 @@ const Cadastro = ({ user }: CadastroProps) => {
   const [loading, setLoading] = useState(false);
   const [bancoSelecionado, setBancoSelecionado] = useState("");
   const [numerobanco, setNumeroBank] = useState("");
+  const [modalAberto, setModalAberto] = useState(false);
+  const [novoCredenciamento, setNovoCredenciamento] = useState({
+    nomeBanco: "",
+    numeroBanco: "",
+    agencia: "",
+    conta: "",
+    digitoConta: "",
+    chavePix: "",
+    tipoChave: "",
+    nomeBeneficiario: "",
+    documentoBeneficiario: "",
+  });
   const { toast } = useToast();
   const [dadosBancarios, setDadosBancarios] = useState({
     nomeBanco: "",
@@ -317,11 +330,210 @@ const Cadastro = ({ user }: CadastroProps) => {
       [field]: value
     }));
   };
+
+  const handleNovoCredenciamentoChange = (field: string, value: string) => {
+    setNovoCredenciamento(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Auto-preencher número do banco quando selecionar o nome
+    if (field === "nomeBanco") {
+      const banco = bancos.find(b => b.nome === value);
+      if (banco) {
+        setNovoCredenciamento(prev => ({
+          ...prev,
+          numeroBanco: banco.codigo
+        }));
+      }
+    }
+  };
+
+  const salvarNovoCredenciamento = async () => {
+    try {
+      // Validação básica
+      if (!novoCredenciamento.nomeBanco || !novoCredenciamento.agencia || !novoCredenciamento.conta || !novoCredenciamento.chavePix) {
+        toast({
+          title: "Erro",
+          description: "Preencha todos os campos obrigatórios.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Simulação de salvamento - substitua pela API real
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast({
+        title: "Credenciamento criado",
+        description: "Novo credenciamento PIX criado com sucesso.",
+      });
+
+      // Limpar formulário e fechar modal
+      setNovoCredenciamento({
+        nomeBanco: "",
+        numeroBanco: "",
+        agencia: "",
+        conta: "",
+        digitoConta: "",
+        chavePix: "",
+        tipoChave: "",
+        nomeBeneficiario: "",
+        documentoBeneficiario: "",
+      });
+      setModalAberto(false);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao criar novo credenciamento.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Cadastro</h1>
-        <p className="text-muted-foreground">Edite informações cadastrais dos clientes</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Cadastro</h1>
+          <p className="text-muted-foreground">Edite informações cadastrais dos clientes</p>
+        </div>
+        
+        <Dialog open={modalAberto} onOpenChange={setModalAberto}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              + Novo Cadastro
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Novo Credenciamento PIX</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="novoNomeBanco">Nome do Banco *</Label>
+                  <Select 
+                    value={novoCredenciamento.nomeBanco} 
+                    onValueChange={(value) => handleNovoCredenciamentoChange("nomeBanco", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o banco" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bancos.map((banco) => (
+                        <SelectItem key={banco.codigo} value={banco.nome}>
+                          {banco.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="novoNumeroBanco">Número do Banco</Label>
+                  <Input
+                    id="novoNumeroBanco"
+                    value={novoCredenciamento.numeroBanco}
+                    disabled
+                    placeholder="Preenchido automaticamente"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novaAgencia">Agência *</Label>
+                  <Input
+                    id="novaAgencia"
+                    value={novoCredenciamento.agencia}
+                    onChange={(e) => handleNovoCredenciamentoChange("agencia", e.target.value)}
+                    placeholder="1234-5"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novaConta">Conta *</Label>
+                  <Input
+                    id="novaConta"
+                    value={novoCredenciamento.conta}
+                    onChange={(e) => handleNovoCredenciamentoChange("conta", e.target.value)}
+                    placeholder="12345-6"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novoDigitoConta">Dígito da Conta</Label>
+                  <Input
+                    id="novoDigitoConta"
+                    value={novoCredenciamento.digitoConta}
+                    onChange={(e) => handleNovoCredenciamentoChange("digitoConta", e.target.value)}
+                    placeholder="7"
+                    maxLength={1}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novoTipoChave">Tipo da Chave PIX *</Label>
+                  <Select 
+                    value={novoCredenciamento.tipoChave} 
+                    onValueChange={(value) => handleNovoCredenciamentoChange("tipoChave", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tiposChavePix.map((tipo) => (
+                        <SelectItem key={tipo.value} value={tipo.value}>
+                          {tipo.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="md:col-span-2">
+                  <Label htmlFor="novaChavePix">Chave PIX *</Label>
+                  <Input
+                    id="novaChavePix"
+                    value={novoCredenciamento.chavePix}
+                    onChange={(e) => handleNovoCredenciamentoChange("chavePix", e.target.value)}
+                    placeholder="Digite a chave PIX"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novoNomeBeneficiario">Nome do Beneficiário *</Label>
+                  <Input
+                    id="novoNomeBeneficiario"
+                    value={novoCredenciamento.nomeBeneficiario}
+                    onChange={(e) => handleNovoCredenciamentoChange("nomeBeneficiario", e.target.value)}
+                    placeholder="Nome completo"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="novoDocumentoBeneficiario">Documento do Beneficiário *</Label>
+                  <Input
+                    id="novoDocumentoBeneficiario"
+                    value={novoCredenciamento.documentoBeneficiario}
+                    onChange={(e) => handleNovoCredenciamentoChange("documentoBeneficiario", e.target.value)}
+                    placeholder="CPF do beneficiário"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button variant="outline" onClick={() => setModalAberto(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={salvarNovoCredenciamento} className="flex items-center gap-2">
+                  <Save className="w-4 h-4" />
+                  Salvar Credenciamento
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       {/* Busca de Cliente */}
       <Card>
@@ -605,4 +817,4 @@ const Cadastro = ({ user }: CadastroProps) => {
   );
 };
 export default Cadastro;
-//atualizaçãov5
+//atualizaçãov6
