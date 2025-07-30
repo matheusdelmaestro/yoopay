@@ -53,6 +53,8 @@ const Cadastro = ({ user }: CadastroProps) => {
     tipoChave: "",
     nomeBeneficiario: "",
     documentoBeneficiario: "",
+    taxaValor: "",
+    taxaTipo: "porcentagem",
   });
   const { toast } = useToast();
   const [dadosBancarios, setDadosBancarios] = useState({
@@ -380,6 +382,8 @@ const Cadastro = ({ user }: CadastroProps) => {
         tipoChave: "",
         nomeBeneficiario: "",
         documentoBeneficiario: "",
+        taxaValor: "",
+        taxaTipo: "porcentagem",
       });
       setModalAberto(false);
     } catch (error) {
@@ -519,6 +523,50 @@ const Cadastro = ({ user }: CadastroProps) => {
                     onChange={(e) => handleNovoCredenciamentoChange("documentoBeneficiario", e.target.value)}
                     placeholder="CPF do beneficiário"
                   />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <Label>Taxa PIX *</Label>
+                  <div className="space-y-3">
+                    <RadioGroup
+                      value={novoCredenciamento.taxaTipo === "fixo" ? "2.00" : "2.10"}
+                      onValueChange={(value) => {
+                        if (value === "2.00") {
+                          handleNovoCredenciamentoChange("taxaValor", "2.00");
+                          handleNovoCredenciamentoChange("taxaTipo", "fixo");
+                        } else {
+                          handleNovoCredenciamentoChange("taxaValor", "2.10");
+                          handleNovoCredenciamentoChange("taxaTipo", "porcentagem");
+                        }
+                      }}
+                      className="flex flex-row space-x-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2.00" id="taxa-fixo" />
+                        <Label htmlFor="taxa-fixo" className="cursor-pointer">
+                          R$ 2,00 por venda
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="2.10" id="taxa-porcentagem" />
+                        <Label htmlFor="taxa-porcentagem" className="cursor-pointer">
+                          2,10% por venda
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                    
+                    {novoCredenciamento.taxaValor && (
+                      <div className="bg-muted p-3 rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          <strong>Taxa selecionada:</strong> 
+                          {novoCredenciamento.taxaTipo === "fixo" 
+                            ? ` R$ ${novoCredenciamento.taxaValor} por venda`
+                            : ` ${novoCredenciamento.taxaValor}% sobre cada venda`
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               

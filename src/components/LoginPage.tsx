@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
+import yoogaLogo from "@/assets/yooga-logo.png";
 
 interface LoginPageProps {
   onLogin: (user: { email: string; role: string; name: string }) => void;
@@ -55,8 +56,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-md card-yooga">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-8 h-8 text-primary-foreground" />
+          <div className="flex items-center justify-center mx-auto mb-4">
+            <img 
+              src={yoogaLogo} 
+              alt="Yooga" 
+              className="h-20 w-auto object-contain"
+            />
           </div>
           <CardTitle className="text-2xl">Yooga Pay</CardTitle>
           <CardDescription>Sistema Operacional Interno</CardDescription>

@@ -14,6 +14,7 @@ import Pendentes from "@/pages/Pendentes";
 import Repasses from "@/pages/Repasses";
 import Logs from "@/pages/Logs";
 import Relatorios from "@/pages/Relatorios";
+import yoogaLogo from "@/assets/yooga-logo.png";
 
 interface User {
   email: string;
@@ -78,7 +79,14 @@ const Layout = () => {
         <main className="flex-1">
           <header className="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
             <div className="flex items-center justify-between h-full px-4">
-              <SidebarTrigger />
+              <div className="flex items-center gap-3">
+                <SidebarTrigger />
+                <img 
+                  src={yoogaLogo} 
+                  alt="Yooga" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
               <ThemeToggle />
             </div>
           </header>
