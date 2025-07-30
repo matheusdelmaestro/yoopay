@@ -174,6 +174,9 @@ const Cadastro = ({ user }: CadastroProps) => {
       );
       const pixMethod = pixDriver?.methods?.find((method: any) => method.name === "PIX");
       
+      console.log('PIX Driver encontrado:', pixDriver);
+      console.log('PIX Method encontrado:', pixMethod);
+      
       // Mapear nome do banco da API para a lista local
       const bancoMapping: { [key: string]: string } = {
         "NUBANK": "Nu Pagamentos (Nubank)",
@@ -216,14 +219,28 @@ const Cadastro = ({ user }: CadastroProps) => {
       }
       
       // Configurar taxa PIX baseada nos dados da API
-      if (pixMethod) {
-        const valorTaxa = pixMethod.feeValue || pixMethod.transactionFeeValue || "";
-        const tipoTaxa = pixMethod.feeType === "VALUE" || pixMethod.transactionFeeType === "VALUE" ? "fixo" : "porcentagem";
+      if (pixMethod && pixDriver) {
+        const valorTaxa = pixMethod.feeValue || 0;
+        const tipoTaxa = pixMethod.feeType === "PERCENTAGE" ? "porcentagem" : "fixo";
+        
+        console.log('Configurando taxa PIX:');
+        console.log('- Valor:', valorTaxa);
+        console.log('- Tipo da API:', pixMethod.feeType);
+        console.log('- Tipo formatado:', tipoTaxa);
+        console.log('- Driver enabled:', pixDriver.enabled);
+        console.log('- Method enabled:', pixMethod.enabled);
         
         setTaxaPix({
           valor: valorTaxa.toString(),
           tipo: tipoTaxa,
-          ativada: pixMethod.enabled || false
+          ativada: pixDriver.enabled && pixMethod.enabled
+        });
+      } else {
+        // Se não tem PIX configurado
+        setTaxaPix({
+          valor: "",
+          tipo: "porcentagem",
+          ativada: false
         });
       }
       
