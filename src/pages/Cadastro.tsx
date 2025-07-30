@@ -507,7 +507,7 @@ const Cadastro = ({ user }: CadastroProps) => {
                   </Select>
                 </div>
                 
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
                   <Label htmlFor="novaChavePix">Chave PIX *</Label>
                   <Input
                     id="novaChavePix"
@@ -877,4 +877,4 @@ const Cadastro = ({ user }: CadastroProps) => {
   );
 };
 export default Cadastro;
-//atualizaçãov7
+//atualizaçãov8
