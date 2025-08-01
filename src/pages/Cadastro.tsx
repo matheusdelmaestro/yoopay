@@ -565,10 +565,7 @@ const Cadastro = ({
                     </RadioGroup>
                     
                     {novoCredenciamento.taxaValor && <div className="bg-muted p-3 rounded-lg">
-                        <p className="text-sm text-muted-foreground">
-                          <strong>Taxa selecionada:</strong> 
-                          {novoCredenciamento.taxaTipo === "fixo" ? ` R$ ${novoCredenciamento.taxaValor} por venda` : ` ${novoCredenciamento.taxaValor}% sobre cada venda`}
-                        </p>
+                        
                       </div>}
                   </div>
                 </div>
