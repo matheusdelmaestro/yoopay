@@ -625,7 +625,7 @@ const Cadastro = ({
                 <Input value={cliente.documento} disabled />
               </div>
               <div>
-                <Label>Taxa PIX Atual</Label>
+                
                 
               </div>
               <div>
