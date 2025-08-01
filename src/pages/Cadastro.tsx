@@ -236,7 +236,7 @@ const Cadastro = ({ user }: CadastroProps) => {
       
       // Configurar taxa PIX baseada nos dados da API
       if (pixMethod && pixDriver) {
-        const valorTaxa = pixMethod.feeValue || 0;
+        const valorTaxa = pixMethod.feeValue || pixMethod.transactionFeeValue || 0;
         const tipoTaxa = pixMethod.feeType === "PERCENTAGE" ? "porcentagem" : "fixo";
         
         console.log('Configurando taxa PIX:');
@@ -251,6 +251,12 @@ const Cadastro = ({ user }: CadastroProps) => {
           tipo: tipoTaxa,
           ativada: pixDriver.enabled && pixMethod.enabled
         });
+        
+        // Configurar também o estado editável com os valores atuais
+        setConfigTaxa({
+          valor: valorTaxa.toString(),
+          tipo: tipoTaxa
+        });
       } else {
         // Se não tem PIX configurado
         setTaxaPix({
@@ -258,12 +264,12 @@ const Cadastro = ({ user }: CadastroProps) => {
           tipo: "porcentagem",
           ativada: false
         });
+        
+        setConfigTaxa({
+          valor: "",
+          tipo: "porcentagem"
+        });
       }
-      
-      setConfigTaxa({
-        valor: clienteEncontrado.taxa?.valor || "2.5",
-        tipo: clienteEncontrado.taxa?.tipo || "porcentagem"
-      });
       toast({
         title: "Cliente encontrado",
         description: `Cliente ${clienteFormatado.nome} carregado com sucesso.`,
@@ -313,7 +319,7 @@ const Cadastro = ({ user }: CadastroProps) => {
   const salvarTaxa = async () => {
     try {
       const body = {
-        idi: clienteId,
+        idi: `${clienteId}`,
         marketplaceFees: [{
           driver: "ITAU",
           method: "PIX",
@@ -905,7 +911,7 @@ const Cadastro = ({ user }: CadastroProps) => {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={taxaPix.valor || configTaxa.valor}
+                  value={configTaxa.valor}
                   onChange={(e) => setConfigTaxa(prev => ({ ...prev, valor: e.target.value }))}
                   placeholder={configTaxa.tipo === "porcentagem" ? "2.5" : "10.00"}
                 />
@@ -913,7 +919,7 @@ const Cadastro = ({ user }: CadastroProps) => {
               <div>
                 <Label>Tipo da Taxa</Label>
                 <RadioGroup
-                  value={taxaPix.tipo || configTaxa.tipo}
+                  value={configTaxa.tipo}
                   onValueChange={(value) => setConfigTaxa(prev => ({ ...prev, tipo: value }))}
                   className="flex flex-col space-y-2 mt-2"
                 >
@@ -929,13 +935,13 @@ const Cadastro = ({ user }: CadastroProps) => {
               </div>
             </div>
             
-            {(configTaxa.valor || taxaPix.valor) && (
+            {configTaxa.valor && (
               <div className="bg-muted p-3 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   <strong>Preview:</strong> 
-                  {(taxaPix.tipo || configTaxa.tipo) === "porcentagem" 
-                    ? ` ${taxaPix.valor || configTaxa.valor}% sobre cada venda`
-                    : ` R$ ${taxaPix.valor || configTaxa.valor} por venda`
+                  {configTaxa.tipo === "porcentagem" 
+                    ? ` ${configTaxa.valor}% sobre cada venda`
+                    : ` R$ ${configTaxa.valor} por venda`
                   }
                 </p>
               </div>
