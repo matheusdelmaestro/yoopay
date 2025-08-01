@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Search, Save, User, Calculator, Plus } from "lucide-react";
+import { Search, Save, User, Calculator, Plus, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 interface User {
   email: string;
@@ -55,6 +55,7 @@ const Cadastro = ({ user }: CadastroProps) => {
     documentoBeneficiario: "",
     taxaValor: "",
     taxaTipo: "porcentagem",
+    clienteId: "",
   });
   const { toast } = useToast();
   const [dadosBancarios, setDadosBancarios] = useState({
@@ -309,6 +310,57 @@ const Cadastro = ({ user }: CadastroProps) => {
     }
   };
 
+  const salvarTaxa = async () => {
+    try {
+      const body = {
+        idi: clienteId,
+        marketplaceFees: [{
+          driver: "ITAU",
+          method: "PIX",
+          feeValue: configTaxa.tipo === "porcentagem" ? parseFloat(configTaxa.valor) : 0.0,
+          feeType: configTaxa.tipo === "porcentagem" ? "PERCENTAGE" : "PERCENTAGE",
+          transactionFeeValue: configTaxa.tipo === "fixo" ? parseFloat(configTaxa.valor) : 0.0,
+          transactionFeeType: "VALUE"
+        }]
+      };
+
+      const response = await fetch('https://api4.yooga.com.br/payments/marketplace/fees', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+
+      // Atualizar taxa PIX local com os novos valores
+      setTaxaPix({
+        valor: configTaxa.valor,
+        tipo: configTaxa.tipo,
+        ativada: true
+      });
+
+      toast({
+        title: "Taxa salva",
+        description: `Taxa de ${configTaxa.tipo === "porcentagem" ? configTaxa.valor + "%" : "R$ " + configTaxa.valor} salva e PIX ativado com sucesso.`,
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Erro ao salvar taxa:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar a taxa PIX.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const salvarDados = async () => {
     try {
       // Simulação de salvamento - substitua pela API real
@@ -384,6 +436,7 @@ const Cadastro = ({ user }: CadastroProps) => {
         documentoBeneficiario: "",
         taxaValor: "",
         taxaTipo: "porcentagem",
+        clienteId: "",
       });
       setModalAberto(false);
     } catch (error) {
@@ -809,9 +862,38 @@ const Cadastro = ({ user }: CadastroProps) => {
       {cliente && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="w-5 h-5" />
-              Configuração de Taxa
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calculator className="w-5 h-5" />
+                Taxa
+                <div className="flex items-center gap-2 ml-4">
+                  <Label htmlFor="taxaPixToggle" className="text-sm">
+                    {taxaPix.ativada ? "Ativa" : "Inativa"}
+                  </Label>
+                  <Switch
+                    id="taxaPixToggle"
+                    checked={taxaPix.ativada}
+                    onCheckedChange={async (checked) => {
+                      if (!checked && taxaPix.ativada && cliente) {
+                        // Se está desabilitando uma chave ativa, chama a API
+                        const sucesso = await desabilitarPixItau(cliente.id);
+                        if (sucesso) {
+                          setTaxaPix(prev => ({ ...prev, ativada: false }));
+                        }
+                      } else if (checked && !taxaPix.ativada) {
+                        // Se está habilitando, chama a função salvarTaxa
+                        await salvarTaxa();
+                      }
+                    }}
+                  />
+                  <div className="group relative">
+                    <Info className="w-4 h-4 text-muted-foreground cursor-help" />
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-popover text-popover-foreground text-xs rounded-md border shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-48 z-10">
+                      Para reativar o PIX, defina a taxa no campo abaixo e clique em "Salvar Taxa"
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -823,7 +905,7 @@ const Cadastro = ({ user }: CadastroProps) => {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={configTaxa.valor}
+                  value={taxaPix.valor || configTaxa.valor}
                   onChange={(e) => setConfigTaxa(prev => ({ ...prev, valor: e.target.value }))}
                   placeholder={configTaxa.tipo === "porcentagem" ? "2.5" : "10.00"}
                 />
@@ -831,7 +913,7 @@ const Cadastro = ({ user }: CadastroProps) => {
               <div>
                 <Label>Tipo da Taxa</Label>
                 <RadioGroup
-                  value={configTaxa.tipo}
+                  value={taxaPix.tipo || configTaxa.tipo}
                   onValueChange={(value) => setConfigTaxa(prev => ({ ...prev, tipo: value }))}
                   className="flex flex-col space-y-2 mt-2"
                 >
@@ -847,25 +929,20 @@ const Cadastro = ({ user }: CadastroProps) => {
               </div>
             </div>
             
-            {configTaxa.valor && (
+            {(configTaxa.valor || taxaPix.valor) && (
               <div className="bg-muted p-3 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   <strong>Preview:</strong> 
-                  {configTaxa.tipo === "porcentagem" 
-                    ? ` ${configTaxa.valor}% sobre cada venda`
-                    : ` R$ ${configTaxa.valor} por venda`
+                  {(taxaPix.tipo || configTaxa.tipo) === "porcentagem" 
+                    ? ` ${taxaPix.valor || configTaxa.valor}% sobre cada venda`
+                    : ` R$ ${taxaPix.valor || configTaxa.valor} por venda`
                   }
                 </p>
               </div>
             )}
             
             <div className="flex justify-end pt-4">
-              <Button onClick={() => {
-                toast({
-                  title: "Taxa configurada",
-                  description: `Taxa de ${configTaxa.tipo === "porcentagem" ? configTaxa.valor + "%" : "R$ " + configTaxa.valor} salva com sucesso.`,
-                });
-              }} className="flex items-center gap-2">
+              <Button onClick={salvarTaxa} className="flex items-center gap-2">
                 <Save className="w-4 h-4" />
                 Salvar Taxa
               </Button>
