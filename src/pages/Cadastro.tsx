@@ -107,6 +107,11 @@ const Cadastro = ({
     tipo: "porcentagem",
     ativada: false
   });
+
+  const [repasseFDS, setRepasseFDS] = useState({
+    status: "",
+    loading: false
+  });
   useEffect(() => {
     if (bancoSelecionado) {
       const banco = bancos.find(b => b.nome === bancoSelecionado);
@@ -282,6 +287,9 @@ const Cadastro = ({
         title: "Cliente encontrado",
         description: `Cliente ${clienteFormatado.nome} carregado com sucesso.`
       });
+
+      // Buscar informações de repasse no FDS
+      await buscarRepasseFDS(clienteFormatado.id);
     } catch (error) {
       console.error("Erro ao buscar cliente:", error);
       toast({
@@ -320,6 +328,41 @@ const Cadastro = ({
       return false;
     }
   };
+  const buscarRepasseFDS = async (clienteId: string) => {
+    setRepasseFDS({ status: "", loading: true });
+    
+    try {
+      const response = await fetch(`https://payment.yooga.com.br/marketplace/config/weekend-payout-blocklist/${clienteId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE3NTE2NTA1MTUsImV4cCI6MjA2NzAxMDUxNSwianRpIjoiNzUyZThmM2ItZGRlNC00NDI0LTlkMWUtMjk2MTllZGFlZGE2In0.q5w24YUk6KPIHkbUBucwZb8oS23vcjuRiLtzha7XU3vAH65scvIabdOwVaz1kXta1UcNNCvPzYV2tpGCqPu99Zj9_OEK-X4Ejo4ii0-izknSpDyL15HY1jz3ofPk6OreTF052nsgJpagjX3GBTEpqnHy8gJa4nLqevTxhkPrHdyiMgxmbdCnSNsL8-C9NeL9ZbiSZP0KUQXvbvn-1OARiBGG-Cf71HrP1j3KcwvNGH7UAEGiz-CfDbkk-6moqitNyfsKpTxFEhULCLjCx8b-QkBMEGzYW7eW_PKN7cJbKLNSk_bZ4WsP1mcAovvprV7Sm2wgaqzOxE04RmD_9tqDXg',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const message = data.message || "";
+
+      let status = "";
+      if (message === "Marketplace está na blocklist - não recebe repasses nos fins de semana") {
+        status = "Não recebe";
+      } else if (message === "Marketplace NÃO está na blocklist - recebe repasses nos fins de semana") {
+        status = "Recebe";
+      } else {
+        status = "Status não identificado";
+      }
+
+      setRepasseFDS({ status, loading: false });
+    } catch (error) {
+      console.error("Erro ao buscar repasse FDS:", error);
+      setRepasseFDS({ status: "Erro ao carregar", loading: false });
+    }
+  };
+
   const salvarTaxa = async () => {
     try {
       const body = {
@@ -621,12 +664,21 @@ const Cadastro = ({
                 <Input value={cliente.nome} disabled />
               </div>
               <div>
-                <Label>Documento</Label>
-                <Input value={cliente.documento} disabled />
+                <Label>Repasse no FDS</Label>
+                <Input 
+                  value={repasseFDS.loading ? "Carregando..." : repasseFDS.status} 
+                  disabled 
+                  className={
+                    repasseFDS.loading ? "text-muted-foreground" :
+                    repasseFDS.status === "Recebe" ? "text-green-600" :
+                    repasseFDS.status === "Não recebe" ? "text-red-600" :
+                    "text-muted-foreground"
+                  } 
+                />
               </div>
               <div>
-                
-                
+                <Label>Documento</Label>
+                <Input value={cliente.documento} disabled />
               </div>
               <div>
                 <Label>Status da Configuração</Label>
