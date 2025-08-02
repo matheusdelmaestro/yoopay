@@ -417,16 +417,50 @@ const Cadastro = ({
   };
   const salvarDados = async () => {
     try {
-      // Simulação de salvamento - substitua pela API real
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Determinar pixKeyType baseado na chave PIX
+      let pixKeyType = dadosBancarios.tipoChave;
+      if (dadosBancarios.chavePix.startsWith("+55")) {
+        pixKeyType = "CELLPHONE";
+      }
+
+      const body = {
+        bankName: dadosBancarios.nomeBanco,
+        bankNumber: numerobanco || dadosBancarios.numeroBanco,
+        agency: dadosBancarios.agencia,
+        account: dadosBancarios.conta,
+        accountDigit: dadosBancarios.digitoConta,
+        pixKey: dadosBancarios.chavePix,
+        holderName: dadosBancarios.nomeBeneficiario,
+        holderDocument: dadosBancarios.documentoBeneficiario,
+        pixKeyType: pixKeyType.toUpperCase(),
+        userIdi: clienteId
+      };
+
+      const response = await fetch('https://api4.yooga.com.br/payments/banking', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjU3NywiaWF0IjoxNjk4MTcyMzcxfQ.iT2HFaUdL2A603PA1pHRAglUyEmsJyhxbDo05TxcyO8',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+
       toast({
         title: "Dados salvos",
         description: "Informações bancárias atualizadas com sucesso."
       });
+
+      // Recarregar os dados do cliente para refletir as mudanças
+      await buscarCliente();
     } catch (error) {
+      console.error("Erro ao salvar dados bancários:", error);
       toast({
         title: "Erro",
-        description: "Erro ao salvar as informações.",
+        description: "Erro ao salvar as informações bancárias.",
         variant: "destructive"
       });
     }
