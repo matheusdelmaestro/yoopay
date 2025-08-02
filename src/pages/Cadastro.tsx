@@ -37,7 +37,10 @@ const bancos = [{
   nome: "Banco Original"
 }, {
   codigo: "260",
-  nome: "Nu Pagamentos (Nubank)"
+  nome: "Nubank"
+}, {
+  codigo: "999",
+  nome: "Nenhum dos listados"
 }, {
   codigo: "290",
   nome: "PagSeguro Internet"
@@ -116,12 +119,21 @@ const Cadastro = ({
     if (bancoSelecionado) {
       const banco = bancos.find(b => b.nome === bancoSelecionado);
       if (banco) {
-        setNumeroBank(banco.codigo);
-        setDadosBancarios(prev => ({
-          ...prev,
-          nomeBanco: bancoSelecionado,
-          numeroBanco: banco.codigo
-        }));
+        if (bancoSelecionado === "Nenhum dos listados") {
+          setNumeroBank("");
+          setDadosBancarios(prev => ({
+            ...prev,
+            nomeBanco: "",
+            numeroBanco: ""
+          }));
+        } else {
+          setNumeroBank(banco.codigo);
+          setDadosBancarios(prev => ({
+            ...prev,
+            nomeBanco: bancoSelecionado,
+            numeroBanco: banco.codigo
+          }));
+        }
       }
     }
   }, [bancoSelecionado]);
@@ -214,7 +226,7 @@ const Cadastro = ({
       const bancoMapping: {
         [key: string]: string;
       } = {
-        "NUBANK": "Nu Pagamentos (Nubank)",
+        "NUBANK": "Nubank",
         "ITAU": "Itaú Unibanco",
         "BRADESCO": "Bradesco",
         "SANTANDER": "Santander",
@@ -424,8 +436,8 @@ const Cadastro = ({
       }
 
       const body = {
-        bankName: dadosBancarios.nomeBanco,
-        bankNumber: numerobanco || dadosBancarios.numeroBanco,
+        bankName: bancoSelecionado === "Nenhum dos listados" ? null : dadosBancarios.nomeBanco,
+        bankNumber: bancoSelecionado === "Nenhum dos listados" ? null : (numerobanco || dadosBancarios.numeroBanco),
         agency: dadosBancarios.agencia,
         account: dadosBancarios.conta,
         accountDigit: dadosBancarios.digitoConta,
