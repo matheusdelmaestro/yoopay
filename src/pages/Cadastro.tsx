@@ -230,6 +230,7 @@ const Cadastro = ({
       console.log('Número do banco:', clienteEncontrado.bank?.bankNumber);
       const clienteFormatado = {
         id: clienteEncontrado.id || clienteEncontrado.originId || clienteId,
+        originId: clienteEncontrado.originId || clienteId,
         nome: clienteEncontrado.tradeName || clienteEncontrado.businessName || "Nome não informado",
         documento: clienteEncontrado.document || "Documento não informado",
         dadosBancarios: {
@@ -289,7 +290,7 @@ const Cadastro = ({
       });
 
       // Buscar informações de repasse no FDS
-      await buscarRepasseFDS(clienteFormatado.id);
+      await buscarRepasseFDS(clienteFormatado.originId);
     } catch (error) {
       console.error("Erro ao buscar cliente:", error);
       toast({
@@ -341,6 +342,11 @@ const Cadastro = ({
       });
 
       if (!response.ok) {
+        if (response.status === 404) {
+          // Quando retorna 404, significa que não está na blocklist (recebe repasses)
+          setRepasseFDS({ status: "Recebe", loading: false });
+          return;
+        }
         throw new Error(`Erro na API: ${response.status}`);
       }
 
@@ -353,7 +359,7 @@ const Cadastro = ({
       } else if (message === "Marketplace NÃO está na blocklist - recebe repasses nos fins de semana") {
         status = "Recebe";
       } else {
-        status = "Status não identificado";
+        status = "Recebe"; // Padrão: se não está na blocklist, recebe
       }
 
       setRepasseFDS({ status, loading: false });
