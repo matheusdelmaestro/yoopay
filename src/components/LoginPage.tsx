@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
-import yoogaLogo from "@/assets/yooga-logo-adaptive.png";
+import yoogaLogo from "@/assets/yooga-logo-exact.png";
 
 interface LoginPageProps {
   onLogin: (user: { email: string; role: string; name: string }) => void;
