@@ -14,7 +14,7 @@ import Pendentes from "@/pages/Pendentes";
 import Repasses from "@/pages/Repasses";
 import Logs from "@/pages/Logs";
 import Relatorios from "@/pages/Relatorios";
-import yoogaLogo from "@/assets/yooga-logo.png";
+import yoogaLogo from "@/assets/yooga-logo-adaptive.png";
 
 interface User {
   email: string;
@@ -84,7 +84,7 @@ const Layout = () => {
                 <img 
                   src={yoogaLogo} 
                   alt="Yooga" 
-                  className="h-8 w-auto object-contain"
+                  className="h-8 w-auto object-contain dark:brightness-110"
                 />
               </div>
               <ThemeToggle />

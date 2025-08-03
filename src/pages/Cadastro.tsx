@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, Save, User, Calculator, Plus, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { createAuthHeaders, API_CONFIG } from "@/lib/api-config";
 interface User {
   email: string;
   role: string;
@@ -148,12 +149,9 @@ const Cadastro = ({
     }
     setLoading(true);
     try {
-      const response = await fetch(`https://payment.yooga.com.br/marketplace/${clienteId}/list`, {
+      const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/${clienteId}/list`, {
         method: 'GET',
-        headers: {
-          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN')
       });
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`);
@@ -316,12 +314,9 @@ const Cadastro = ({
   };
   const desabilitarPixItau = async (originId: string) => {
     try {
-      const response = await fetch(`https://payment.yooga.com.br/marketplace/${clienteId}/drivers/itau/disable`, {
+      const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/${clienteId}/drivers/itau/disable`, {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE2ODI0NDc1ODcsImV4cCI6MTk5NzgwNzU4NywianRpIjoiZjkwNDVjOWItZjEyMy00YjliLTk2M2QtOGUxMDVmYzk2OGYwIn0.jmlvmxJd0PSrkXyPtDMi8zkbmEWzroqPhIDDyamyBXmcJUvLilh_CFTqskPTv9Sj4zhP-wQXXJ7GshL8OcT7gPZSHXPkVL3heUGE3zE59fP6WjTgLTpv6Y5lXpRXKBHt4JT0fB8LvA9qPltRftgK3Q_8yjqtdMVWIjRWpXn-VOVFL8y7YOGkSAe_U5ix8shKarrBFbzDc9hufSr5Iu_Q4TrzEdwORyhTerInBCZjYwmjuvfmdjM3ejTH0X8C6Maeh_Tj-7STxWPPIF3VPLmU0lvvr7TZI5Am0WvToDAdU3ETmZgUp8FSf7H5ZDmwKFk95z1ocGanRvLdfyp2XxgKkA',
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN')
       });
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`);
@@ -345,12 +340,9 @@ const Cadastro = ({
     setRepasseFDS({ status: "", loading: true });
     
     try {
-      const response = await fetch(`https://payment.yooga.com.br/marketplace/config/weekend-payout-blocklist/${clienteId}`, {
+      const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/config/weekend-payout-blocklist/${clienteId}`, {
         method: 'GET',
-        headers: {
-          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5b29nYS5jb20uYnIiLCJ1cG4iOiIxIiwiZ3JvdXBzIjpbIk9SR0FOSVpBVElPTiJdLCJpYXQiOjE3NTE2NTA1MTUsImV4cCI6MjA2NzAxMDUxNSwianRpIjoiNzUyZThmM2ItZGRlNC00NDI0LTlkMWUtMjk2MTllZGFlZGE2In0.q5w24YUk6KPIHkbUBucwZb8oS23vcjuRiLtzha7XU3vAH65scvIabdOwVaz1kXta1UcNNCvPzYV2tpGCqPu99Zj9_OEK-X4Ejo4ii0-izknSpDyL15HY1jz3ofPk6OreTF052nsgJpagjX3GBTEpqnHy8gJa4nLqevTxhkPrHdyiMgxmbdCnSNsL8-C9NeL9ZbiSZP0KUQXvbvn-1OARiBGG-Cf71HrP1j3KcwvNGH7UAEGiz-CfDbkk-6moqitNyfsKpTxFEhULCLjCx8b-QkBMEGzYW7eW_PKN7cJbKLNSk_bZ4WsP1mcAovvprV7Sm2wgaqzOxE04RmD_9tqDXg',
-          'Content-Type': 'application/json'
-        }
+        headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN')
       });
 
       if (!response.ok) {
@@ -394,12 +386,9 @@ const Cadastro = ({
           transactionFeeType: "VALUE"
         }]
       };
-      const response = await fetch('https://api4.yooga.com.br/payments/marketplace/fees', {
+      const response = await fetch(`${API_CONFIG.endpoints.API4}/payments/marketplace/fees`, {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjU3NywiaWF0IjoxNjk4MTcyMzcxfQ.iT2HFaUdL2A603PA1pHRAglUyEmsJyhxbDo05TxcyO8',
-          'Content-Type': 'application/json'
-        },
+        headers: createAuthHeaders('YOOGA_API4_TOKEN'),
         body: JSON.stringify(body)
       });
       if (!response.ok) {
@@ -448,12 +437,9 @@ const Cadastro = ({
         userIdi: clienteId
       };
 
-      const response = await fetch('https://api4.yooga.com.br/payments/banking', {
+      const response = await fetch(`${API_CONFIG.endpoints.API4}/payments/banking`, {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjU3NywiaWF0IjoxNjk4MTcyMzcxfQ.iT2HFaUdL2A603PA1pHRAglUyEmsJyhxbDo05TxcyO8',
-          'Content-Type': 'application/json'
-        },
+        headers: createAuthHeaders('YOOGA_API4_TOKEN'),
         body: JSON.stringify(body)
       });
 
