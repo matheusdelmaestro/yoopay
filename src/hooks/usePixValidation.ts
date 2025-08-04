@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { createAuthHeaders, API_CONFIG } from '@/lib/api-config';
 import { useCustomToast } from './useCustomToast';
 
@@ -47,7 +47,7 @@ export const usePixValidation = () => {
   const [loading, setLoading] = useState(false);
   const { success, error } = useCustomToast();
 
-  const fetchPendingRequests = async () => {
+  const fetchPendingRequests = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/pending`, {
@@ -69,9 +69,9 @@ export const usePixValidation = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [error]);
 
-  const approveRequest = async (clienteId: string) => {
+  const approveRequest = useCallback(async (clienteId: string) => {
     try {
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/approve/${clienteId}`, {
         method: 'POST',
@@ -95,9 +95,9 @@ export const usePixValidation = () => {
         description: 'Erro ao aprovar solicitação de PIX',
       });
     }
-  };
+  }, [success, error, fetchPendingRequests]);
 
-  const rejectRequest = async (clienteId: string) => {
+  const rejectRequest = useCallback(async (clienteId: string) => {
     try {
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/pending/delete/${clienteId}`, {
         method: 'DELETE',
@@ -121,15 +121,15 @@ export const usePixValidation = () => {
         description: 'Erro ao rejeitar solicitação de PIX',
       });
     }
-  };
+  }, [success, error, fetchPendingRequests]);
 
-  const parsePayload = (payloadString: string): PixPayloadData | null => {
+  const parsePayload = useCallback((payloadString: string): PixPayloadData | null => {
     try {
       return JSON.parse(payloadString);
     } catch (err) {
       return null;
     }
-  };
+  }, []);
 
   return {
     pendingRequests,

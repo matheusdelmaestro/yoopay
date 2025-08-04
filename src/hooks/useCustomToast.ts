@@ -1,7 +1,5 @@
 import { toast as originalToast } from "@/hooks/use-toast"
 
-type ToastType = 'success' | 'warning' | 'error' | 'info'
-
 interface CustomToastOptions {
   title?: string
   description?: string
@@ -9,20 +7,28 @@ interface CustomToastOptions {
 }
 
 export const useCustomToast = () => {
-  const showToast = (type: ToastType, options: CustomToastOptions) => {
-    return originalToast({
-      variant: type,
+  return {
+    success: (options: CustomToastOptions) => originalToast({
       title: options.title,
       description: options.description,
       duration: options.duration || 4000,
-    })
-  }
-
-  return {
-    success: (options: CustomToastOptions) => showToast('success', options),
-    warning: (options: CustomToastOptions) => showToast('warning', options),
-    error: (options: CustomToastOptions) => showToast('error', options),
-    info: (options: CustomToastOptions) => showToast('info', options),
+    }),
+    warning: (options: CustomToastOptions) => originalToast({
+      title: options.title,
+      description: options.description,
+      duration: options.duration || 4000,
+    }),
+    error: (options: CustomToastOptions) => originalToast({
+      variant: 'destructive',
+      title: options.title,
+      description: options.description,
+      duration: options.duration || 4000,
+    }),
+    info: (options: CustomToastOptions) => originalToast({
+      title: options.title,
+      description: options.description,
+      duration: options.duration || 4000,
+    }),
     toast: originalToast, // Keep original for compatibility
   }
 }

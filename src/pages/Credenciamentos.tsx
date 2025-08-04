@@ -74,7 +74,7 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
   // Carregar dados ao montar o componente
   useEffect(() => {
     fetchPendingRequests();
-  }, []);
+  }, [fetchPendingRequests]);
 
   // Dados simulados para credenciamentos Crédito
   const credenciamentosCredito: CredenciamentoCredito[] = [
