@@ -15,6 +15,7 @@ import Repasses from "@/pages/Repasses";
 import Logs from "@/pages/Logs";
 import Relatorios from "@/pages/Relatorios";
 import yoogaLogo from "@/assets/yooga-logo-exact.png";
+import Footer from "@/components/Footer";
 
 interface User {
   email: string;
@@ -76,7 +77,7 @@ const Layout = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar user={user} onLogout={handleLogout} />
-        <main className="flex-1">
+        <main className="flex-1 flex flex-col">
           <header className="h-14 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
             <div className="flex items-center justify-between h-full px-4">
               <div className="flex items-center gap-3">
@@ -90,9 +91,10 @@ const Layout = () => {
               <ThemeToggle />
             </div>
           </header>
-          <div className="p-6">
+          <div className="flex-1 p-6">
             {renderPageContent()}
           </div>
+          <Footer />
         </main>
       </div>
     </SidebarProvider>
