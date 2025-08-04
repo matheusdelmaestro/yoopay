@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,8 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { QrCode, CreditCard, Store, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
+import { QrCode, CreditCard, Store, CheckCircle, XCircle, Clock, Eye, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { usePixValidation } from "@/hooks/usePixValidation";
 
 interface User {
   email: string;
@@ -60,49 +61,41 @@ interface CredenciamentoCredito {
 }
 
 const Credenciamentos = ({ user }: CredenciamentosProps) => {
+  console.log('Credenciamentos component rendered with user:', user);
+  
   const { toast } = useToast();
 
-  // Dados simulados para credenciamentos PIX
-  const credenciamentosPix: CredenciamentoPix[] = [
-    {
-      id: "PIX001",
-      clienteNome: "João Silva Ltda",
-      clienteId: "CLI001",
-      documento: "12.345.678/0001-90",
-      dataSolicitacao: "2024-01-15T10:30:00",
-      status: "pendente",
-      dadosBancarios: {
-        nomeBanco: "Banco do Brasil",
-        numeroBanco: "001",
-        agencia: "1234-5",
-        conta: "12345-6",
-        digitoConta: "7",
-        chavePix: "12345678000190",
-        tipoChave: "cnpj",
-        nomeBeneficiario: "João Silva",
-        documentoBeneficiario: "123.456.789-01"
-      }
-    },
-    {
-      id: "PIX002",
-      clienteNome: "Maria Santos ME",
-      clienteId: "CLI002",
-      documento: "98.765.432/0001-10",
-      dataSolicitacao: "2024-01-14T14:20:00",
-      status: "pendente",
-      dadosBancarios: {
-        nomeBanco: "Itaú Unibanco",
-        numeroBanco: "341",
-        agencia: "5678-9",
-        conta: "98765-4",
-        digitoConta: "3",
-        chavePix: "maria@empresa.com",
-        tipoChave: "email",
-        nomeBeneficiario: "Maria Santos",
-        documentoBeneficiario: "987.654.321-00"
-      }
+  // Inicialização segura dos hooks
+  let pixValidationHooks;
+  try {
+    pixValidationHooks = usePixValidation();
+  } catch (error) {
+    console.error('Error initializing usePixValidation:', error);
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-red-600">Erro ao carregar Credenciamentos</h1>
+        <p>Houve um problema ao inicializar a página. Tente recarregar.</p>
+      </div>
+    );
+  }
+
+  const { 
+    pendingRequests, 
+    loading, 
+    fetchPendingRequests, 
+    approveRequest, 
+    rejectRequest, 
+    parsePayload 
+  } = pixValidationHooks;
+
+  // Carregar dados ao montar o componente
+  useEffect(() => {
+    try {
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error fetching pending requests:', error);
     }
-  ];
+  }, [fetchPendingRequests]);
 
   // Dados simulados para credenciamentos Crédito
   const credenciamentosCredito: CredenciamentoCredito[] = [
@@ -145,21 +138,6 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
       }
     }
   ];
-
-  const aprovarCredenciamentoPix = (id: string) => {
-    toast({
-      title: "Credenciamento aprovado",
-      description: `Credenciamento PIX ${id} foi aprovado com sucesso.`,
-    });
-  };
-
-  const rejeitarCredenciamentoPix = (id: string) => {
-    toast({
-      title: "Credenciamento rejeitado",
-      description: `Credenciamento PIX ${id} foi rejeitado.`,
-      variant: "destructive",
-    });
-  };
 
   const processarCredenciamentoCredito = (id: string, acao: "aprovar" | "rejeitar" | "manter_analise") => {
     const acoes = {
@@ -229,13 +207,26 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
         <TabsContent value="pix" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <QrCode className="w-5 h-5" />
-                Credenciamentos PIX Pendentes
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Analise e aprove credenciamentos PIX verificando se os dados bancários estão corretos
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <QrCode className="w-5 h-5" />
+                    Credenciamentos PIX Pendentes
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Analise e aprove credenciamentos PIX verificando se os dados bancários estão corretos
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={fetchPendingRequests}
+                  disabled={loading}
+                  size="sm"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  Atualizar Lista
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -250,91 +241,104 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {credenciamentosPix.map((credenciamento) => (
-                      <TableRow key={credenciamento.id}>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{credenciamento.clienteNome}</div>
-                            <div className="text-sm text-muted-foreground">ID: {credenciamento.clienteId}</div>
-                          </div>
-                        </TableCell>
-                        <TableCell>{credenciamento.documento}</TableCell>
-                        <TableCell>
-                          {new Date(credenciamento.dataSolicitacao).toLocaleDateString('pt-BR')}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(credenciamento.status)}>
-                            {getStatusLabel(credenciamento.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  <Eye className="w-3 h-3 mr-1" />
-                                  Ver Dados
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Dados Bancários - {credenciamento.clienteNome}</DialogTitle>
-                                </DialogHeader>
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Nome do Banco</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.nomeBanco}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Número do Banco</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.numeroBanco}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Agência</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.agencia}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Conta</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.conta}-{credenciamento.dadosBancarios.digitoConta}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Tipo da Chave PIX</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.tipoChave.toUpperCase()}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Chave PIX</Label>
-                                    <p className="font-medium font-mono text-sm">{credenciamento.dadosBancarios.chavePix}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Nome do Beneficiário</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.nomeBeneficiario}</p>
-                                  </div>
-                                  <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">Documento do Beneficiário</Label>
-                                    <p className="font-medium">{credenciamento.dadosBancarios.documentoBeneficiario}</p>
-                                  </div>
-                                </div>
-                                <div className="flex justify-end gap-2 mt-6">
-                                  <Button 
-                                    variant="destructive" 
-                                    onClick={() => rejeitarCredenciamentoPix(credenciamento.id)}
-                                  >
-                                    <XCircle className="w-4 h-4 mr-1" />
-                                    Rejeitar
-                                  </Button>
-                                  <Button 
-                                    onClick={() => aprovarCredenciamentoPix(credenciamento.id)}
-                                  >
-                                    <CheckCircle className="w-4 h-4 mr-1" />
-                                    Aprovar
-                                  </Button>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
+                    {pendingRequests.length === 0 && !loading ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          Nenhuma solicitação pendente encontrada
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      pendingRequests.map((request) => {
+                        const payloadData = parsePayload(request.payload);
+                        return (
+                          <TableRow key={request.id}>
+                            <TableCell>
+                              <div>
+                                <div className="font-medium">{payloadData?.tradeName || 'N/A'}</div>
+                                <div className="text-sm text-muted-foreground">ID: {request.originId}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>{payloadData?.document || 'N/A'}</TableCell>
+                            <TableCell>
+                              {new Date(request.createdAt).toLocaleDateString('pt-BR')}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                                Pendente
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="w-3 h-3 mr-1" />
+                                      Ver Dados
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl">
+                                    <DialogHeader>
+                                      <DialogTitle>Dados Bancários - {payloadData?.tradeName}</DialogTitle>
+                                    </DialogHeader>
+                                    {payloadData?.bank && (
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Nome do Banco</Label>
+                                          <p className="font-medium">{payloadData.bank.bankName}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Número do Banco</Label>
+                                          <p className="font-medium">{payloadData.bank.bankNumber}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Agência</Label>
+                                          <p className="font-medium">{payloadData.bank.agency}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Conta</Label>
+                                          <p className="font-medium">{payloadData.bank.account}-{payloadData.bank.accountDigit}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Tipo da Chave PIX</Label>
+                                          <p className="font-medium">{payloadData.bank.pixKeyType.toUpperCase()}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Chave PIX</Label>
+                                          <p className="font-medium font-mono text-sm">{payloadData.bank.pixKey}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Nome do Beneficiário</Label>
+                                          <p className="font-medium">{payloadData.bank.holderName}</p>
+                                        </div>
+                                        <div>
+                                          <Label className="text-sm font-medium text-muted-foreground">Documento do Beneficiário</Label>
+                                          <p className="font-medium">{payloadData.bank.holderDocument}</p>
+                                        </div>
+                                      </div>
+                                    )}
+                                    <div className="flex justify-end gap-2 mt-6">
+                                      <Button 
+                                        variant="destructive" 
+                                        onClick={() => rejectRequest(request.originId)}
+                                      >
+                                        <XCircle className="w-4 h-4 mr-1" />
+                                        Rejeitar
+                                      </Button>
+                                      <Button 
+                                        onClick={() => approveRequest(request.originId)}
+                                      >
+                                        <CheckCircle className="w-4 h-4 mr-1" />
+                                        Aprovar
+                                      </Button>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
                   </TableBody>
                 </Table>
               </div>
