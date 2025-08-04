@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { LoginPage } from "@/components/LoginPage";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Dashboard } from "@/components/Dashboard";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { useUserPersistence } from "@/hooks/useUserPersistence";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import Cadastro from "@/pages/Cadastro";
 import Pedidos from "@/pages/Pedidos";
@@ -24,16 +24,16 @@ interface User {
 }
 
 const Layout = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, isLoading, login, logout } = useUserPersistence();
   const { success } = useCustomToast();
   const location = useLocation();
 
   const handleLogin = (userData: User) => {
-    setUser(userData);
+    login(userData);
   };
 
   const handleLogout = () => {
-    setUser(null);
+    logout();
     success({
       title: "Logout realizado",
       description: "Você foi desconectado com sucesso.",
@@ -68,6 +68,18 @@ const Layout = () => {
         return <Dashboard user={user} />;
     }
   };
+
+  // Mostrar loading enquanto verifica se há usuário salvo
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <LoginPage onLogin={handleLogin} />;
