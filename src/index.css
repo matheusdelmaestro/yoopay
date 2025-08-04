@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,10 +20,10 @@ All colors MUST be HSL based on Yooga brand identity.
     --popover: 0 0% 100%;
     --popover-foreground: 210 15% 15%;
 
-    /* Yooga blue primary brand */
-    --primary: 208 92% 46%;
+    /* Yooga green primary brand (replacing blue) */
+    --primary: var(--green-dark);
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 208 92% 40%;
+    --primary-hover: var(--green-medium);
 
     /* Yooga secondary colors */
     --secondary: 210 17% 96%;
@@ -30,8 +32,8 @@ All colors MUST be HSL based on Yooga brand identity.
     --muted: 210 17% 96%;
     --muted-foreground: 210 10% 60%;
 
-    --accent: 197 71% 92%;
-    --accent-foreground: 208 92% 46%;
+    --accent: var(--green-light);
+    --accent-foreground: var(--green-dark);
 
     /* System colors */
     --destructive: 0 84% 60%;
@@ -55,17 +57,25 @@ All colors MUST be HSL based on Yooga brand identity.
 
     --border: 210 17% 90%;
     --input: 210 17% 95%;
-    --ring: 208 92% 46%;
+    --ring: var(--green-medium);
 
     --radius: 0.5rem;
 
-    /* Gradients for Yooga brand */
-    --gradient-primary: linear-gradient(135deg, hsl(208 92% 46%), hsl(197 71% 55%));
-    --gradient-subtle: linear-gradient(180deg, hsl(210 17% 98%), hsl(210 17% 95%));
+    /* Modern Green Palette */
+    --green-dark: 152 65% 25%; /* #16653c */
+    --green-light: 152 65% 85%; /* #bbf7d6 */
+    --green-medium: 152 65% 55%;
     
-    /* Shadows with Yooga blue */
-    --shadow-card: 0 1px 3px 0 hsl(208 92% 46% / 0.1), 0 1px 2px 0 hsl(208 92% 46% / 0.06);
-    --shadow-elevated: 0 10px 25px -5px hsl(208 92% 46% / 0.1), 0 4px 6px -2px hsl(208 92% 46% / 0.05);
+    /* Gradients for Yooga brand */
+    --gradient-primary: var(--gradient-green);
+    --gradient-subtle: linear-gradient(180deg, hsl(210 17% 98%), hsl(210 17% 95%));
+    --gradient-green: linear-gradient(135deg, hsl(var(--green-dark)), hsl(var(--green-medium)));
+    --gradient-green-soft: linear-gradient(135deg, hsl(var(--green-medium)), hsl(var(--green-light)));
+    --gradient-green-modern: linear-gradient(45deg, hsl(var(--green-dark)) 0%, hsl(var(--green-medium)) 50%, hsl(var(--green-light)) 100%);
+    
+    /* Shadows with Yooga green */
+    --shadow-card: 0 1px 3px 0 hsl(var(--green-dark) / 0.1), 0 1px 2px 0 hsl(var(--green-dark) / 0.06);
+    --shadow-elevated: 0 10px 25px -5px hsl(var(--green-dark) / 0.1), 0 4px 6px -2px hsl(var(--green-dark) / 0.05);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -91,9 +101,9 @@ All colors MUST be HSL based on Yooga brand identity.
     --popover: 210 15% 10%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 208 92% 55%;
+    --primary: var(--green-medium);
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 208 92% 60%;
+    --primary-hover: var(--green-light);
 
     --secondary: 210 15% 15%;
     --secondary-foreground: 0 0% 95%;
@@ -102,7 +112,7 @@ All colors MUST be HSL based on Yooga brand identity.
     --muted-foreground: 210 10% 70%;
 
     --accent: 210 15% 15%;
-    --accent-foreground: 208 92% 55%;
+    --accent-foreground: var(--green-medium);
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -117,12 +127,12 @@ All colors MUST be HSL based on Yooga brand identity.
     --toast-warning-foreground: 0 0% 100%;
     --toast-error: 0 84% 60%;
     --toast-error-foreground: 0 0% 100%;
-    --toast-info: 208 92% 55%;
+    --toast-info: var(--green-medium);
     --toast-info-foreground: 0 0% 100%;
 
     --border: 210 15% 20%;
     --input: 210 15% 15%;
-    --ring: 208 92% 55%;
+    --ring: var(--green-medium);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -142,7 +152,7 @@ All colors MUST be HSL based on Yooga brand identity.
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -152,9 +162,55 @@ All colors MUST be HSL based on Yooga brand identity.
 
 @layer components {
   .btn-yooga {
-    @apply bg-primary text-primary-foreground hover:bg-primary-hover;
-    @apply px-4 py-2 rounded-md font-medium transition-colors;
-    @apply shadow-sm hover:shadow-md;
+    background: var(--gradient-green);
+    @apply text-white px-4 py-2 rounded-md font-medium;
+    @apply shadow-sm hover:shadow-md transition-all duration-300;
+    @apply hover:shadow-green hover:transform hover:-translate-y-0.5;
+  }
+
+  .btn-yooga:hover {
+    background: var(--gradient-green-modern);
+  }
+
+  .btn-modern {
+    background: var(--gradient-green);
+    @apply text-white px-6 py-3 rounded-lg font-semibold;
+    @apply shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+    @apply transition-all duration-300 ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-modern:hover::before {
+    left: 100%;
+  }
+
+  .btn-modern:hover {
+    background: var(--gradient-green-modern);
+    box-shadow: 0 20px 40px -12px hsl(var(--green-dark) / 0.4);
+  }
+
+  .btn-soft {
+    background: var(--gradient-green-soft);
+    @apply text-green-800 px-4 py-2 rounded-lg font-medium;
+    @apply border border-green-200 hover:border-green-300;
+    @apply transition-all duration-200;
+  }
+
+  .btn-soft:hover {
+    @apply shadow-md transform translate-y-[-1px];
+    background: linear-gradient(135deg, hsl(var(--green-light)), hsl(var(--green-medium)));
   }
 
   .card-yooga {
@@ -198,5 +254,49 @@ All colors MUST be HSL based on Yooga brand identity.
 
   .status-pending {
     @apply bg-muted text-muted-foreground border border-border;
+  }
+
+  /* Modern Green Components */
+  .card-modern {
+    @apply bg-white border border-green-200 rounded-xl;
+    @apply shadow-lg hover:shadow-xl transition-all duration-300;
+    background: linear-gradient(145deg, #ffffff 0%, hsl(var(--green-light) / 0.1) 100%);
+  }
+
+  .card-modern:hover {
+    @apply transform translate-y-[-2px];
+    box-shadow: 0 25px 50px -12px hsl(var(--green-dark) / 0.15);
+  }
+
+  .input-modern {
+    @apply bg-white border-2 border-green-200 rounded-lg px-4 py-3;
+    @apply focus:outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100;
+    @apply transition-all duration-200;
+  }
+
+  .badge-modern {
+    background: var(--gradient-green-soft);
+    @apply text-green-800 px-3 py-1 rounded-full text-sm font-medium;
+    @apply border border-green-200;
+  }
+
+  .text-gradient {
+    background: var(--gradient-green);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    @apply font-bold;
+  }
+
+  .bg-gradient-modern {
+    background: var(--gradient-green-modern);
+  }
+
+  .bg-gradient-soft {
+    background: var(--gradient-green-soft);
+  }
+
+  .shadow-green {
+    box-shadow: 0 10px 25px -5px hsl(var(--green-dark) / 0.2), 0 4px 6px -2px hsl(var(--green-dark) / 0.1);
   }
 }

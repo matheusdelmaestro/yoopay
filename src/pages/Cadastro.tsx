@@ -15,8 +15,62 @@ interface User {
   role: string;
   name: string;
 }
+
 interface CadastroProps {
   user: User;
+}
+
+interface ClienteAPI {
+  id?: string;
+  originId?: string;
+  tradeName?: string;
+  businessName?: string;
+  document?: string;
+  drivers?: DriverAPI[];
+  bank?: BankAPI;
+}
+
+interface DriverAPI {
+  methods?: MethodAPI[];
+}
+
+interface MethodAPI {
+  name: string;
+  feeValue?: number;
+  transactionFeeValue?: number;
+  feeType?: string;
+}
+
+interface BankAPI {
+  bankName?: string;
+  bankNumber?: string;
+  agency?: string;
+  account?: string;
+  accountDigit?: string;
+  pixKey?: string;
+  pixKeyType?: string;
+  holderName?: string;
+  holderDocument?: string;
+}
+
+interface ClienteFormatado {
+  id: string;
+  originId: string;
+  nome: string;
+  documento: string;
+  dadosBancarios: DadosBancarios;
+}
+
+interface DadosBancarios {
+  nomeBanco: string;
+  numeroBanco: string;
+  agencia: string;
+  conta: string;
+  digitoConta: string;
+  chavePix: string;
+  tipoChave: string;
+  nomeBeneficiario: string;
+  documentoBeneficiario: string;
 }
 const bancos = [{
   codigo: "001",
@@ -69,7 +123,7 @@ const Cadastro = ({
   user
 }: CadastroProps) => {
   const [clienteId, setClienteId] = useState("");
-  const [cliente, setCliente] = useState<any>(null);
+  const [cliente, setCliente] = useState<ClienteFormatado | null>(null);
   const [loading, setLoading] = useState(false);
   const [bancoSelecionado, setBancoSelecionado] = useState("");
   const [numerobanco, setNumeroBank] = useState("");
@@ -171,7 +225,7 @@ const Cadastro = ({
         console.log('Primeiro item do array:', data[0]);
 
         // Se for array, usar find normalmente
-        clienteEncontrado = data.find((item: any) => {
+        clienteEncontrado = data.find((item: ClienteAPI) => {
           console.log('Verificando item:', item);
           const match = item.id === clienteId || item.id === parseInt(clienteId) || item.codigo === clienteId || item.documento === clienteId;
           console.log('Match encontrado?', match);
@@ -187,7 +241,7 @@ const Cadastro = ({
         for (const arr of possibleArrays) {
           if (Array.isArray(arr)) {
             console.log('Encontrou array em uma das propriedades:', arr);
-            clienteEncontrado = arr.find((item: any) => {
+            clienteEncontrado = arr.find((item: ClienteAPI) => {
               console.log('Verificando item do array aninhado:', item);
               const match = item.id === clienteId || item.id === parseInt(clienteId) || item.codigo === clienteId || item.documento === clienteId;
               console.log('Match encontrado?', match);
@@ -215,8 +269,8 @@ const Cadastro = ({
         throw new Error("Cliente não encontrado na base de dados");
       }
       // Processar informações de taxa PIX
-      const pixDriver = clienteEncontrado.drivers?.find((driver: any) => driver.methods?.some((method: any) => method.name === "PIX"));
-      const pixMethod = pixDriver?.methods?.find((method: any) => method.name === "PIX");
+      const pixDriver = clienteEncontrado.drivers?.find((driver: DriverAPI) => driver.methods?.some((method: MethodAPI) => method.name === "PIX"));
+      const pixMethod = pixDriver?.methods?.find((method: MethodAPI) => method.name === "PIX");
       console.log('PIX Driver encontrado:', pixDriver);
       console.log('PIX Method encontrado:', pixMethod);
 

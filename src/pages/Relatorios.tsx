@@ -32,6 +32,37 @@ interface RelatoriosProps {
   user: User;
 }
 
+interface DadosCliente {
+  id: string;
+  nome: string;
+  documento: string;
+  email: string;
+  status: string;
+}
+
+interface DadosFaturamento {
+  cliente: string;
+  transacoes: number;
+  valorTotal: string;
+  ticketMedio: string;
+}
+
+interface DadosTransacao {
+  cliente: string;
+  periodo: string;
+  totalTransacoes: number;
+  crescimento: string;
+}
+
+interface DadosRanking {
+  posicao: number;
+  cliente: string;
+  criterio: string;
+  valor: string;
+}
+
+type DadosRelatorio = DadosCliente | DadosFaturamento | DadosTransacao | DadosRanking;
+
 const tiposRelatorio = [
   { value: "clientes", label: "Lista de Clientes", icon: Users },
   { value: "faturamento", label: "Faturamento por Cliente", icon: DollarSign },
@@ -44,7 +75,7 @@ const Relatorios = ({ user }: RelatoriosProps) => {
   const [dataInicio, setDataInicio] = useState<Date>();
   const [dataFim, setDataFim] = useState<Date>();
   const [loading, setLoading] = useState(false);
-  const [dados, setDados] = useState<any[]>([]);
+  const [dados, setDados] = useState<DadosRelatorio[]>([]);
   const [filtroTexto, setFiltroTexto] = useState("");
   const { toast } = useToast();
 
@@ -63,7 +94,7 @@ const Relatorios = ({ user }: RelatoriosProps) => {
       // Simulação de dados - substitua pela API real
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      let dadosSimulados: any[] = [];
+      let dadosSimulados: DadosRelatorio[] = [];
       
       switch (tipoRelatorio) {
         case "clientes":

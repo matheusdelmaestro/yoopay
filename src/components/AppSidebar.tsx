@@ -65,10 +65,10 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "supervisor": return "bg-primary text-primary-foreground";
-      case "financeiro": return "bg-success text-success-foreground";
+      case "supervisor": return "bg-gradient-modern text-white";
+      case "financeiro": return "bg-gradient-green-soft text-green-800";
       case "pagamento": return "bg-warning text-warning-foreground";
-      case "atendimento": return "bg-accent text-accent-foreground";
+      case "atendimento": return "bg-green-modern-light text-green-modern-dark";
       default: return "bg-muted text-muted-foreground";
     }
   };
@@ -94,8 +94,8 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
           {!collapsed && (
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">Y</span>
+                <div className="w-8 h-8 bg-gradient-modern rounded-lg flex items-center justify-center shadow-green">
+                  <span className="text-white font-bold text-sm">Y</span>
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm">Yooga Pay</h3>
@@ -112,8 +112,8 @@ export function AppSidebar({ user, onLogout }: AppSidebarProps) {
           )}
           {collapsed && (
             <div className="flex flex-col items-center space-y-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">Y</span>
+              <div className="w-8 h-8 bg-gradient-modern rounded-lg flex items-center justify-center shadow-green">
+                <span className="text-white font-bold text-sm">Y</span>
               </div>
               <div className={`w-2 h-2 rounded-full ${getRoleBadgeColor(user.role)}`}></div>
             </div>

@@ -189,16 +189,16 @@ export function Dashboard({ user }: DashboardProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {user.role === "atendimento" && (
               <>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
-                    <Users className="h-8 w-8 text-primary" />
+                    <Users className="h-8 w-8 text-green-modern-dark" />
                     <div>
-                      <h3 className="font-medium">Novo Cadastro</h3>
+                      <h3 className="font-medium text-green-modern-dark">Novo Cadastro</h3>
                       <p className="text-sm text-muted-foreground">Cadastrar novo cliente</p>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
                     <ShoppingCart className="h-8 w-8 text-warning" />
                     <div>
@@ -212,16 +212,16 @@ export function Dashboard({ user }: DashboardProps) {
 
             {user.role === "pagamento" && (
               <>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
-                    <Store className="h-8 w-8 text-primary" />
+                    <Store className="h-8 w-8 text-green-modern-dark" />
                     <div>
-                      <h3 className="font-medium">Novo Credenciamento</h3>
+                      <h3 className="font-medium text-green-modern-dark">Novo Credenciamento</h3>
                       <p className="text-sm text-muted-foreground">Credenciar nova loja</p>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
                     <CreditCard className="h-8 w-8 text-success" />
                     <div>
@@ -235,7 +235,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             {user.role === "financeiro" && (
               <>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
                     <Clock className="h-8 w-8 text-warning" />
                     <div>
@@ -244,11 +244,11 @@ export function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
-                    <TrendingUp className="h-8 w-8 text-success" />
+                    <TrendingUp className="h-8 w-8 text-green-modern-dark" />
                     <div>
-                      <h3 className="font-medium">Relatório Financeiro</h3>
+                      <h3 className="font-medium text-green-modern-dark">Relatório Financeiro</h3>
                       <p className="text-sm text-muted-foreground">Gerar relatório</p>
                     </div>
                   </div>
@@ -258,7 +258,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             {user.role === "supervisor" && (
               <>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
                     <AlertCircle className="h-8 w-8 text-destructive" />
                     <div>
@@ -267,11 +267,11 @@ export function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                <div className="card-modern p-4 cursor-pointer">
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-8 w-8 text-success" />
+                    <CheckCircle className="h-8 w-8 text-green-modern-dark" />
                     <div>
-                      <h3 className="font-medium">Aprovar Pendências</h3>
+                      <h3 className="font-medium text-green-modern-dark">Aprovar Pendências</h3>
                       <p className="text-sm text-muted-foreground">Revisar aprovações</p>
                     </div>
                   </div>
