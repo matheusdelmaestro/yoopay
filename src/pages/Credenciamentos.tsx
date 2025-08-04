@@ -71,12 +71,31 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
     pixValidationHooks = usePixValidation();
   } catch (error) {
     console.error('Error initializing usePixValidation:', error);
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold text-red-600">Erro ao carregar Credenciamentos</h1>
-        <p>Houve um problema ao inicializar a página. Tente recarregar.</p>
-      </div>
-    );
+    // Fallback para dados mockados quando há erro na API
+    pixValidationHooks = {
+      pendingRequests: [],
+      loading: false,
+      fetchPendingRequests: () => {
+        toast({
+          title: "Modo Offline",
+          description: "Usando dados simulados - API indisponível",
+          variant: "destructive"
+        });
+      },
+      approveRequest: (id: string) => {
+        toast({
+          title: "Simulação",
+          description: `Credenciamento ${id} seria aprovado (modo offline)`,
+        });
+      },
+      rejectRequest: (id: string) => {
+        toast({
+          title: "Simulação",
+          description: `Credenciamento ${id} seria rejeitado (modo offline)`,
+        });
+      },
+      parsePayload: () => null
+    };
   }
 
   const { 
@@ -88,14 +107,20 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
     parsePayload 
   } = pixValidationHooks;
 
-  // Carregar dados ao montar o componente
+  // Estado para controlar se é a primeira vez que a página carrega
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  // Carregar dados apenas na primeira vez que o componente monta
   useEffect(() => {
-    try {
-      fetchPendingRequests();
-    } catch (error) {
-      console.error('Error fetching pending requests:', error);
+    if (isFirstLoad) {
+      try {
+        fetchPendingRequests();
+        setIsFirstLoad(false);
+      } catch (error) {
+        console.error('Error fetching pending requests:', error);
+      }
     }
-  }, [fetchPendingRequests]);
+  }, [fetchPendingRequests, isFirstLoad]);
 
   // Dados simulados para credenciamentos Crédito
   const credenciamentosCredito: CredenciamentoCredito[] = [
@@ -284,35 +309,35 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                                       <div className="grid grid-cols-2 gap-4">
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Nome do Banco</Label>
-                                          <p className="font-medium">{payloadData.bank.bankName}</p>
+                                          <p className="font-medium">{payloadData.bank.bankName || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Número do Banco</Label>
-                                          <p className="font-medium">{payloadData.bank.bankNumber}</p>
+                                          <p className="font-medium">{payloadData.bank.bankNumber || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Agência</Label>
-                                          <p className="font-medium">{payloadData.bank.agency}</p>
+                                          <p className="font-medium">{payloadData.bank.agency || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Conta</Label>
-                                          <p className="font-medium">{payloadData.bank.account}-{payloadData.bank.accountDigit}</p>
+                                          <p className="font-medium">{payloadData.bank.account || 'N/A'}-{payloadData.bank.accountDigit || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Tipo da Chave PIX</Label>
-                                          <p className="font-medium">{payloadData.bank.pixKeyType.toUpperCase()}</p>
+                                          <p className="font-medium">{payloadData.bank.pixKeyType?.toUpperCase() || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Chave PIX</Label>
-                                          <p className="font-medium font-mono text-sm">{payloadData.bank.pixKey}</p>
+                                          <p className="font-medium font-mono text-sm">{payloadData.bank.pixKey || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Nome do Beneficiário</Label>
-                                          <p className="font-medium">{payloadData.bank.holderName}</p>
+                                          <p className="font-medium">{payloadData.bank.holderName || 'N/A'}</p>
                                         </div>
                                         <div>
                                           <Label className="text-sm font-medium text-muted-foreground">Documento do Beneficiário</Label>
-                                          <p className="font-medium">{payloadData.bank.holderDocument}</p>
+                                          <p className="font-medium">{payloadData.bank.holderDocument || 'N/A'}</p>
                                         </div>
                                       </div>
                                     )}
