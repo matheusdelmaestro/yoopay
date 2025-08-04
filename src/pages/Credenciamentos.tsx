@@ -61,7 +61,24 @@ interface CredenciamentoCredito {
 }
 
 const Credenciamentos = ({ user }: CredenciamentosProps) => {
+  console.log('Credenciamentos component rendered with user:', user);
+  
   const { toast } = useToast();
+
+  // Inicialização segura dos hooks
+  let pixValidationHooks;
+  try {
+    pixValidationHooks = usePixValidation();
+  } catch (error) {
+    console.error('Error initializing usePixValidation:', error);
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-red-600">Erro ao carregar Credenciamentos</h1>
+        <p>Houve um problema ao inicializar a página. Tente recarregar.</p>
+      </div>
+    );
+  }
+
   const { 
     pendingRequests, 
     loading, 
@@ -69,11 +86,15 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
     approveRequest, 
     rejectRequest, 
     parsePayload 
-  } = usePixValidation();
+  } = pixValidationHooks;
 
   // Carregar dados ao montar o componente
   useEffect(() => {
-    fetchPendingRequests();
+    try {
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error fetching pending requests:', error);
+    }
   }, [fetchPendingRequests]);
 
   // Dados simulados para credenciamentos Crédito
