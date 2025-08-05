@@ -21,7 +21,7 @@ interface CadastroProps {
 }
 
 interface ClienteAPI {
-  id?: string;
+  id?: string | number;
   originId?: string;
   tradeName?: string;
   businessName?: string;
@@ -227,7 +227,7 @@ const Cadastro = ({
         // Se for array, usar find normalmente
         clienteEncontrado = data.find((item: ClienteAPI) => {
           console.log('Verificando item:', item);
-          const match = item.id === clienteId || item.id === parseInt(clienteId) || item.codigo === clienteId || item.documento === clienteId;
+          const match = String(item.id) === clienteId || Number(item.id) === Number(clienteId) || item.originId === clienteId || item.document === clienteId;
           console.log('Match encontrado?', match);
           return match;
         });
@@ -243,7 +243,7 @@ const Cadastro = ({
             console.log('Encontrou array em uma das propriedades:', arr);
             clienteEncontrado = arr.find((item: ClienteAPI) => {
               console.log('Verificando item do array aninhado:', item);
-              const match = item.id === clienteId || item.id === parseInt(clienteId) || item.codigo === clienteId || item.documento === clienteId;
+              const match = String(item.id) === clienteId || Number(item.id) === Number(clienteId) || item.originId === clienteId || item.document === clienteId;
               console.log('Match encontrado?', match);
               return match;
             });

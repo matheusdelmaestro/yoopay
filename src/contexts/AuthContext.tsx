@@ -3,10 +3,10 @@ import { useAuth, AuthState } from '../hooks/useAuth'
 import { UserMetadata, AuthUser } from '../lib/supabase'
 
 interface AuthContextType extends AuthState {
-  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string; data?: AuthUser }>
-  signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<{ success: boolean; error?: string; data?: AuthUser }>
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string; data?: any }>
+  signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<{ success: boolean; error?: string; data?: any }>
   signOut: () => Promise<{ success: boolean; error?: string }>
-  resetPassword: (email: string) => Promise<{ success: boolean; error?: string; data?: AuthUser }>
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string; data?: any }>
   isAuthenticated: boolean
 }
 

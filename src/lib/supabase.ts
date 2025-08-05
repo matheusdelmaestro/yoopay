@@ -88,7 +88,7 @@ export const auth = {
   },
 
   // Escutar mudanças de autenticação
-  onAuthStateChange: (callback: (event: string, session: AuthSession | null) => void) => {
+  onAuthStateChange: (callback: (event: any, session: any) => void) => {
     return supabase.auth.onAuthStateChange(callback)
   },
 

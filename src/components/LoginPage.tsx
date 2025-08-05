@@ -36,19 +36,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       // Tentar login com Supabase primeiro
       const result = await signIn(email, password);
       
-      if (result.success && result.data?.user) {
-        const user = result.data.user;
+      if (result.success && result.data) {
+        const authUser = result.data;
         toast({
           title: "Login realizado com sucesso",
-          description: `Bem-vindo(a), ${user.email}!`,
+          description: `Bem-vindo(a), ${authUser.email}!`,
         });
         
         // Mapear role baseado no email ou metadata
-        const role = user.user_metadata?.role || 'atendimento';
-        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário';
+        const role = authUser.user_metadata?.role || 'atendimento';
+        const name = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário';
         
         onLogin({ 
-          email: user.email || '', 
+          email: authUser.email || '', 
           role, 
           name 
         });
