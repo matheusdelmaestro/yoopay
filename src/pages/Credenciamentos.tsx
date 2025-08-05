@@ -65,37 +65,43 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
   
   const { toast } = useToast();
 
+  // Dados simulados para PIX como fallback
+  const pixFallback = {
+    pendingRequests: [],
+    loading: false,
+    fetchPendingRequests: () => {
+      console.log('fetchPendingRequests called - using simulated data');
+      toast({
+        title: "Modo Simulação",
+        description: "Usando dados simulados",
+      });
+    },
+    approveRequest: (id: string) => {
+      console.log('approveRequest called for:', id);
+      toast({
+        title: "Simulação",
+        description: `Credenciamento ${id} aprovado (simulação)`,
+      });
+    },
+    rejectRequest: (id: string) => {
+      console.log('rejectRequest called for:', id);
+      toast({
+        title: "Simulação", 
+        description: `Credenciamento ${id} rejeitado (simulação)`,
+      });
+    },
+    parsePayload: () => null
+  };
+
   // Inicialização segura dos hooks
   let pixValidationHooks;
   try {
+    console.log('Trying to initialize usePixValidation...');
     pixValidationHooks = usePixValidation();
+    console.log('usePixValidation initialized successfully');
   } catch (error) {
     console.error('Error initializing usePixValidation:', error);
-    // Fallback para dados mockados quando há erro na API
-    pixValidationHooks = {
-      pendingRequests: [],
-      loading: false,
-      fetchPendingRequests: () => {
-        toast({
-          title: "Modo Offline",
-          description: "Usando dados simulados - API indisponível",
-          variant: "destructive"
-        });
-      },
-      approveRequest: (id: string) => {
-        toast({
-          title: "Simulação",
-          description: `Credenciamento ${id} seria aprovado (modo offline)`,
-        });
-      },
-      rejectRequest: (id: string) => {
-        toast({
-          title: "Simulação",
-          description: `Credenciamento ${id} seria rejeitado (modo offline)`,
-        });
-      },
-      parsePayload: () => null
-    };
+    pixValidationHooks = pixFallback;
   }
 
   const { 

@@ -48,20 +48,25 @@ export const usePixValidation = () => {
   const { success, error } = useCustomToast();
 
   const fetchPendingRequests = useCallback(async () => {
+    console.log('fetchPendingRequests called in usePixValidation');
     setLoading(true);
     try {
+      console.log('Making API call to:', `${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/pending`);
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/pending`, {
         method: 'GET',
         headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN'),
       });
 
+      console.log('API response status:', response.status);
       if (!response.ok) {
-        throw new Error('Erro ao buscar solicitações pendentes');
+        throw new Error(`API error: ${response.status} - ${response.statusText}`);
       }
 
       const data: PixValidationRequest[] = await response.json();
+      console.log('API data received:', data);
       setPendingRequests(data);
     } catch (err) {
+      console.error('Error in fetchPendingRequests:', err);
       error({
         title: 'Erro',
         description: 'Erro ao carregar solicitações pendentes de PIX',
