@@ -1,0 +1,5 @@
+Comprovante de Repasse
+ID: REP001
+Cliente: João Silva
+Valor: R$ 1.250,00
+Data: 25/01/2025 14:30
