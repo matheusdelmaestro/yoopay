@@ -213,8 +213,8 @@
     --muted-foreground: var(--yoo-medium-light);
     --accent: var(--yoo-primary-dark);
     --accent-foreground: #ffffff;
-    --destructive: var(--yoo-danger);
-    --destructive-foreground: #ffffff;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
     --border: #4b5563;
     --input: #4b5563;
     --ring: var(--yoo-primary);
