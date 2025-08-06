@@ -1,7 +1,7 @@
-# Versão 1.1.2
+# Versão 2.0.0
 
-**Data de Build:** 2025-08-06 às 2025-08-06T18:59:24.939Z
-**Commit:** 00fb2ab62cccc0ecf09832cad59bc8250e85c509
+**Data de Build:** 2025-08-06 às 2025-08-06T19:38:59.943Z
+**Commit:** 90051849ee52561c9747d435ff9024a3a6230cbc
 **Branch:** main
 
 ---
