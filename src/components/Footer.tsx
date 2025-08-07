@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="flex items-center justify-between px-6 py-3 text-xs text-muted-foreground">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
-            <span className="font-medium">Yoogapay</span>
+            <span className="font-medium">Yooga Flow Assist</span>
             <Badge variant="outline" className="text-xs">
               v{version}
             </Badge>

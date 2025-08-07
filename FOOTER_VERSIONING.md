@@ -114,12 +114,3 @@ O sistema está pronto para integração com pipelines de CI/CD:
 - ✅ **Fallbacks**: Configurados
 
 **Resultado**: Footer com versionamento automático baseado em commits Git funcionando perfeitamente! 🎉
-
-# Para releases patch (correções)
-npm run version:patch
-
-# Para releases minor (novas funcionalidades)
-npm run version:minor
-
-# Para releases major (breaking changes)
-npm run version:major

@@ -4,19 +4,17 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Variáveis de ambiente do Supabase não encontradas!')
-  console.warn('A aplicação funcionará apenas com usuários mock.')
-  console.warn('Para usar Supabase, configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.local')
+  console.error('❌ Variáveis de ambiente do Supabase não encontradas!')
+  console.error('Verifique se VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY estão definidas no .env.local')
+  throw new Error('Missing Supabase environment variables')
 }
 
-export const supabase = (!supabaseUrl || !supabaseAnonKey) 
-  ? null 
-  : createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-      }
-    })
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+})
 
 // Tipos para autenticação
 export interface AuthUser {
@@ -47,16 +45,6 @@ export interface AuthSession {
 export const auth = {
   // Login com email e senha
   signIn: async (email: string, password: string) => {
-    if (!supabase) {
-      return { 
-        data: null, 
-        error: { 
-          message: 'Supabase não configurado. Usando autenticação mock.',
-          name: 'ConfigError'
-        } 
-      }
-    }
-    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -69,7 +57,7 @@ export const auth = {
       return { 
         data: null, 
         error: { 
-          message: 'Erro de conectividade. Verifique sua internet e configuração do Supabase.',
+          message: 'Erro de conectividade. Verifique sua internet e configuração do Supabase. Consulte SOLUCAO_SUPABASE.md',
           name: 'NetworkError'
         } 
       }
@@ -78,16 +66,6 @@ export const auth = {
 
   // Registro de novo usuário
   signUp: async (email: string, password: string, metadata?: UserMetadata) => {
-    if (!supabase) {
-      return { 
-        data: null, 
-        error: { 
-          message: 'Supabase não configurado.',
-          name: 'ConfigError'
-        } 
-      }
-    }
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -100,44 +78,22 @@ export const auth = {
 
   // Logout
   signOut: async () => {
-    if (!supabase) {
-      return { error: null }
-    }
-    
     const { error } = await supabase.auth.signOut()
     return { error }
   },
 
   // Obter usuário atual
   getCurrentUser: () => {
-    if (!supabase) {
-      return Promise.resolve({ data: { user: null }, error: null })
-    }
-    
     return supabase.auth.getUser()
   },
 
   // Escutar mudanças de autenticação
-  onAuthStateChange: (callback: (event: string, session: AuthSession | null) => void) => {
-    if (!supabase) {
-      return { data: { subscription: { unsubscribe: () => {} } } }
-    }
-    
+  onAuthStateChange: (callback: (event: any, session: any) => void) => {
     return supabase.auth.onAuthStateChange(callback)
   },
 
   // Reset de senha
   resetPassword: async (email: string) => {
-    if (!supabase) {
-      return { 
-        data: null, 
-        error: { 
-          message: 'Supabase não configurado.',
-          name: 'ConfigError'
-        } 
-      }
-    }
-    
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
@@ -146,16 +102,6 @@ export const auth = {
 
   // Login com Google (opcional)
   signInWithGoogle: async () => {
-    if (!supabase) {
-      return { 
-        data: null, 
-        error: { 
-          message: 'Supabase não configurado.',
-          name: 'ConfigError'
-        } 
-      }
-    }
-    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
