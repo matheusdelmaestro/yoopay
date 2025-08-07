@@ -594,7 +594,7 @@ const Cadastro = ({
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2">
               <Plus className="w-4 h-4" />
-              + Novo Cadastro
+               Novo Cadastro
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -931,5 +931,7 @@ const Cadastro = ({
     </div>;
 };
 export default Cadastro;
-//atualizaçãov19
+
+//atualizaçãov20
+
 

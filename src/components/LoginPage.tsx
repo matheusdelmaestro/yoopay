@@ -116,30 +116,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <Button type="submit" className="w-full btn-modern" disabled={isLoading}>
               {isLoading ? "Entrando..." : "Entrar"}
             </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-2">Usuários de teste:</p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="space-y-1">
-                <p className="font-medium">Atendimento</p>
-                <p>atendimento@yooga.com.br</p>
-              </div>
-              <div className="space-y-1">
-                <p className="font-medium">Pagamento</p>
-                <p>pagamento@yooga.com.br</p>
-              </div>
-              <div className="space-y-1">
-                <p className="font-medium">Financeiro</p>
-                <p>financeiro@yooga.com.br</p>
-              </div>
-              <div className="space-y-1">
-                <p className="font-medium">Supervisor</p>
-                <p>supervisor@yooga.com.br</p>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">Senha: xK%d^nhP5%@#$$@</p>
-          </div>
+          </form>          
         </CardContent>
       </Card>
     </div>

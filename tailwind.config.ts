@@ -23,20 +23,14 @@ export default {
 				sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
 			},
 			colors: {
-				border: 'hsl(var(--border))',
-				input: 'hsl(var(--input))',
-				ring: 'hsl(var(--ring))',
+				border: 'var(--border)',
+				input: 'var(--input)',
+				ring: 'var(--ring)',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				'green-modern': {
-					DEFAULT: 'hsl(var(--green-medium))',
-					dark: 'hsl(var(--green-dark))',
-					light: 'hsl(var(--green-light))'
-				},
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
+					DEFAULT: 'var(--primary)',
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -45,30 +39,6 @@ export default {
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
-				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
-				},
-				'toast-success': {
-					DEFAULT: 'hsl(var(--toast-success))',
-					foreground: 'hsl(var(--toast-success-foreground))'
-				},
-				'toast-warning': {
-					DEFAULT: 'hsl(var(--toast-warning))',
-					foreground: 'hsl(var(--toast-warning-foreground))'
-				},
-				'toast-error': {
-					DEFAULT: 'hsl(var(--toast-error))',
-					foreground: 'hsl(var(--toast-error-foreground))'
-				},
-				'toast-info': {
-					DEFAULT: 'hsl(var(--toast-info))',
-					foreground: 'hsl(var(--toast-info-foreground))'
 				},
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
@@ -86,15 +56,22 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				chart: {
+					'1': 'hsl(var(--chart-1))',
+					'2': 'hsl(var(--chart-2))',
+					'3': 'hsl(var(--chart-3))',
+					'4': 'hsl(var(--chart-4))',
+					'5': 'hsl(var(--chart-5))'
+				},
 				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
+					DEFAULT: 'hsl(var(--sidebar))',
 					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
+					primary: 'var(--sidebar-primary)',
 					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
 					accent: 'hsl(var(--sidebar-accent))',
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					border: 'var(--sidebar-border)',
+					ring: 'var(--sidebar-ring)'
 				}
 			},
 			borderRadius: {

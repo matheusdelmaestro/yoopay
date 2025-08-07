@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -258,7 +259,7 @@ export function Dashboard({ user }: DashboardProps) {
 
             {user.role === "supervisor" && (
               <>
-                <div className="card-modern p-4 cursor-pointer">
+                <NavLink to="/logs" className="card-modern p-4 cursor-pointer hover:bg-accent/50 transition-colors">
                   <div className="flex items-center space-x-3">
                     <AlertCircle className="h-8 w-8 text-destructive" />
                     <div>
@@ -266,8 +267,8 @@ export function Dashboard({ user }: DashboardProps) {
                       <p className="text-sm text-muted-foreground">Auditoria de ações</p>
                     </div>
                   </div>
-                </div>
-                <div className="card-modern p-4 cursor-pointer">
+                </NavLink>
+                <NavLink to="/credenciamentos" className="card-modern p-4 cursor-pointer hover:bg-accent/50 transition-colors">
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-8 w-8 text-green-modern-dark" />
                     <div>
@@ -275,7 +276,7 @@ export function Dashboard({ user }: DashboardProps) {
                       <p className="text-sm text-muted-foreground">Revisar aprovações</p>
                     </div>
                   </div>
-                </div>
+                </NavLink>
               </>
             )}
           </div>
