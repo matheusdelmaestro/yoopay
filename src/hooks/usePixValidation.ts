@@ -79,7 +79,7 @@ export const usePixValidation = () => {
   const approveRequest = useCallback(async (clienteId: string) => {
     try {
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/approve/${clienteId}`, {
-        method: 'GET',
+        method: 'POST',
         headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN'),
       });
 
@@ -105,7 +105,7 @@ export const usePixValidation = () => {
   const rejectRequest = useCallback(async (clienteId: string) => {
     try {
       const response = await fetch(`${API_CONFIG.endpoints.PAYMENT_API}/marketplace/validation/pending/delete/${clienteId}`, {
-        method: 'GET',
+        method: 'DELETE',
         headers: createAuthHeaders('YOOGA_PAYMENT_TOKEN'),
       });
 

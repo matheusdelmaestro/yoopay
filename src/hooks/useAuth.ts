@@ -21,17 +21,6 @@ export const useAuth = () => {
     // Verificar sessão inicial
     const getInitialSession = async () => {
       try {
-        if (!supabase) {
-          // Se Supabase não estiver configurado, apenas definir como não autenticado
-          setAuthState({
-            user: null,
-            session: null,
-            loading: false,
-            error: null,
-          })
-          return
-        }
-        
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error) {
@@ -57,28 +46,21 @@ export const useAuth = () => {
     getInitialSession()
 
     // Escutar mudanças de autenticação
-    let subscription: any = null
-    
-    if (supabase) {
-      const { data } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          
-          
-          setAuthState({
-            user: session?.user ?? null,
-            session,
-            loading: false,
-            error: null,
-          })
-        }
-      )
-      subscription = data.subscription
-    }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session)
+        
+        setAuthState({
+          user: session?.user ?? null,
+          session,
+          loading: false,
+          error: null,
+        })
+      }
+    )
 
     return () => {
-      if (subscription) {
-        subscription.unsubscribe()
-      }
+      subscription.unsubscribe()
     }
   }, [])
 
