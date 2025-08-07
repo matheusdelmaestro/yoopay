@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import yoogaLogo from "@/assets/yooga-logo-exact.png";
-import { useAuthContext } from "@/contexts/AuthContext";
 
 interface LoginPageProps {
   onLogin: (user: { email: string; role: string; name: string }) => void;
@@ -18,7 +17,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { signIn } = useAuthContext();
 
   // Mock users for development (will be replaced by Supabase)
   const mockUsers = [
@@ -33,42 +31,21 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setIsLoading(true);
 
     try {
-      // Tentar login com Supabase primeiro
-      const result = await signIn(email, password);
+      // Usar apenas usuários mock por enquanto
+      const mockUser = mockUsers.find(u => u.email === email && u.password === password);
       
-      if (result.success && result.data?.user) {
-        const user = result.data.user;
+      if (mockUser) {
         toast({
           title: "Login realizado com sucesso",
-          description: `Bem-vindo(a), ${user.email}!`,
+          description: `Bem-vindo(a), ${mockUser.name}!`,
         });
-        
-        // Mapear role baseado no email ou metadata
-        const role = user.user_metadata?.role || 'atendimento';
-        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário';
-        
-        onLogin({ 
-          email: user.email || '', 
-          role, 
-          name 
-        });
+        onLogin({ email: mockUser.email, role: mockUser.role, name: mockUser.name });
       } else {
-        // Fallback para usuários mock se Supabase falhar
-        const mockUser = mockUsers.find(u => u.email === email && u.password === password);
-        
-        if (mockUser) {
-          toast({
-            title: "Login realizado com sucesso (Mock)",
-            description: `Bem-vindo(a), ${mockUser.name}!`,
-          });
-          onLogin({ email: mockUser.email, role: mockUser.role, name: mockUser.name });
-        } else {
-          toast({
-            title: "Erro no login",
-            description: result.error || "E-mail ou senha incorretos.",
-            variant: "destructive",
-          });
-        }
+        toast({
+          title: "Erro no login",
+          description: "E-mail ou senha incorretos.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       toast({

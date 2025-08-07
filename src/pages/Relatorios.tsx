@@ -170,17 +170,17 @@ const Relatorios = ({ user }: RelatoriosProps) => {
             <TableBody>
               {dados.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.nome}</TableCell>
-                  <TableCell>{item.documento}</TableCell>
-                  <TableCell>{item.email}</TableCell>
+                  <TableCell>{'id' in item ? item.id : '-'}</TableCell>
+                  <TableCell>{'nome' in item ? item.nome : '-'}</TableCell>
+                  <TableCell>{'documento' in item ? item.documento : '-'}</TableCell>
+                  <TableCell>{'email' in item ? item.email : '-'}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      item.status === "Ativo" 
+                      ('status' in item && item.status === "Ativo")
                         ? "bg-success/10 text-success" 
                         : "bg-muted text-muted-foreground"
                     }`}>
-                      {item.status}
+                      {'status' in item ? item.status : '-'}
                     </span>
                   </TableCell>
                 </TableRow>
@@ -203,10 +203,10 @@ const Relatorios = ({ user }: RelatoriosProps) => {
             <TableBody>
               {dados.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{item.cliente}</TableCell>
-                  <TableCell>{item.transacoes}</TableCell>
-                  <TableCell className="font-medium text-success">{item.valorTotal}</TableCell>
-                  <TableCell>{item.ticketMedio}</TableCell>
+                  <TableCell className="font-medium">{'cliente' in item ? item.cliente : '-'}</TableCell>
+                  <TableCell>{'transacoes' in item ? item.transacoes : '-'}</TableCell>
+                  <TableCell className="font-medium text-success">{'valorTotal' in item ? item.valorTotal : '-'}</TableCell>
+                  <TableCell>{'ticketMedio' in item ? item.ticketMedio : '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -227,10 +227,10 @@ const Relatorios = ({ user }: RelatoriosProps) => {
             <TableBody>
               {dados.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{item.cliente}</TableCell>
-                  <TableCell>{item.periodo}</TableCell>
-                  <TableCell className="text-center font-medium">{item.totalTransacoes}</TableCell>
-                  <TableCell className="text-success font-medium">{item.crescimento}</TableCell>
+                  <TableCell className="font-medium">{'cliente' in item ? item.cliente : '-'}</TableCell>
+                  <TableCell>{'periodo' in item ? item.periodo : '-'}</TableCell>
+                  <TableCell className="text-center font-medium">{'totalTransacoes' in item ? item.totalTransacoes : '-'}</TableCell>
+                  <TableCell className="text-success font-medium">{'crescimento' in item ? item.crescimento : '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -254,18 +254,18 @@ const Relatorios = ({ user }: RelatoriosProps) => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        item.posicao === 1 ? "bg-warning text-warning-foreground" :
-                        item.posicao === 2 ? "bg-muted text-muted-foreground" :
-                        item.posicao === 3 ? "bg-accent text-accent-foreground" :
+                        ('posicao' in item && item.posicao === 1) ? "bg-warning text-warning-foreground" :
+                        ('posicao' in item && item.posicao === 2) ? "bg-muted text-muted-foreground" :
+                        ('posicao' in item && item.posicao === 3) ? "bg-accent text-accent-foreground" :
                         "bg-background text-foreground border"
                       }`}>
-                        {item.posicao}
+                        {'posicao' in item ? item.posicao : '-'}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">{item.cliente}</TableCell>
-                  <TableCell>{item.criterio}</TableCell>
-                  <TableCell className="font-medium text-success">{item.valor}</TableCell>
+                  <TableCell className="font-medium">{'cliente' in item ? item.cliente : '-'}</TableCell>
+                  <TableCell>{'criterio' in item ? item.criterio : '-'}</TableCell>
+                  <TableCell className="font-medium text-success">{'valor' in item ? item.valor : '-'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

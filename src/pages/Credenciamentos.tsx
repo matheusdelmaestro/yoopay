@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { QrCode, CreditCard, Store, CheckCircle, XCircle, Clock, Eye, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePixValidation } from "@/hooks/usePixValidation";
 
 interface User {
   email: string;
@@ -65,62 +64,55 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
   
   const { toast } = useToast();
 
-  // Inicialização segura dos hooks
-  let pixValidationHooks;
-  try {
-    pixValidationHooks = usePixValidation();
-  } catch (error) {
-    console.error('Error initializing usePixValidation:', error);
-    // Fallback para dados mockados quando há erro na API
-    pixValidationHooks = {
-      pendingRequests: [],
-      loading: false,
-      fetchPendingRequests: () => {
-        toast({
-          title: "Modo Offline",
-          description: "Usando dados simulados - API indisponível",
-          variant: "destructive"
-        });
-      },
-      approveRequest: (id: string) => {
-        toast({
-          title: "Simulação",
-          description: `Credenciamento ${id} seria aprovado (modo offline)`,
-        });
-      },
-      rejectRequest: (id: string) => {
-        toast({
-          title: "Simulação",
-          description: `Credenciamento ${id} seria rejeitado (modo offline)`,
-        });
-      },
-      parsePayload: () => null
-    };
-  }
-
-  const { 
-    pendingRequests, 
-    loading, 
-    fetchPendingRequests, 
-    approveRequest, 
-    rejectRequest, 
-    parsePayload 
-  } = pixValidationHooks;
-
-  // Estado para controlar se é a primeira vez que a página carrega
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-
-  // Carregar dados apenas na primeira vez que o componente monta
-  useEffect(() => {
-    if (isFirstLoad) {
-      try {
-        fetchPendingRequests();
-        setIsFirstLoad(false);
-      } catch (error) {
-        console.error('Error fetching pending requests:', error);
+  // Dados simulados para PIX (usando apenas dados locais)
+  const [pixRequests] = useState([
+    {
+      id: "PIX001",
+      clienteNome: "Loja Virtual Tech",
+      clienteId: "CLI001",
+      documento: "12.345.678/0001-90",
+      dataSolicitacao: "2024-01-15T08:30:00",
+      status: "pendente" as const,
+      dadosBancarios: {
+        nomeBanco: "Banco do Brasil",
+        numeroBanco: "001",
+        agencia: "1234",
+        conta: "56789",
+        digitoConta: "0",
+        chavePix: "12.345.678/0001-90",
+        tipoChave: "CNPJ",
+        nomeBeneficiario: "Loja Virtual Tech LTDA",
+        documentoBeneficiario: "12.345.678/0001-90"
+      }
+    },
+    {
+      id: "PIX002",
+      clienteNome: "Restaurante Sabor & Cia",
+      clienteId: "CLI002",
+      documento: "98.765.432/0001-10",
+      dataSolicitacao: "2024-01-14T14:20:00",
+      status: "pendente" as const,
+      dadosBancarios: {
+        nomeBanco: "Itaú Unibanco",
+        numeroBanco: "341",
+        agencia: "5678",
+        conta: "12345",
+        digitoConta: "6",
+        chavePix: "(11) 99999-8888",
+        tipoChave: "PHONE",
+        nomeBeneficiario: "João Silva",
+        documentoBeneficiario: "123.456.789-01"
       }
     }
-  }, [fetchPendingRequests, isFirstLoad]);
+  ]);
+
+  const handlePixAction = (id: string, action: 'approve' | 'reject') => {
+    const actionText = action === 'approve' ? 'aprovado' : 'rejeitado';
+    toast({
+      title: "Credenciamento processado",
+      description: `Credenciamento PIX ${id} foi ${actionText}.`,
+    });
+  };
 
   // Dados simulados para credenciamentos Crédito
   const credenciamentosCredito: CredenciamentoCredito[] = [
@@ -244,11 +236,10 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                 </div>
                 <Button 
                   variant="outline" 
-                  onClick={fetchPendingRequests}
-                  disabled={loading}
+                  onClick={() => toast({ title: "Lista atualizada", description: "Dados simulados carregados" })}
                   size="sm"
                 >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw className="w-4 h-4 mr-2" />
                   Atualizar Lista
                 </Button>
               </div>
@@ -266,27 +257,25 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pendingRequests.length === 0 && !loading ? (
+                    {pixRequests.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                           Nenhuma solicitação pendente encontrada
                         </TableCell>
                       </TableRow>
                     ) : (
-                      pendingRequests.map((request) => {
-                        const payloadData = parsePayload(request.payload);
-                        return (
-                          <TableRow key={request.id}>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{payloadData?.tradeName || 'N/A'}</div>
-                                <div className="text-sm text-muted-foreground">ID: {request.originId}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell>{payloadData?.document || 'N/A'}</TableCell>
-                            <TableCell>
-                              {new Date(request.createdAt).toLocaleDateString('pt-BR')}
-                            </TableCell>
+                      pixRequests.map((request) => (
+                        <TableRow key={request.id}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{request.clienteNome}</div>
+                              <div className="text-sm text-muted-foreground">ID: {request.clienteId}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{request.documento}</TableCell>
+                          <TableCell>
+                            {new Date(request.dataSolicitacao).toLocaleDateString('pt-BR')}
+                          </TableCell>
                             <TableCell>
                               <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
                                 Pendente
@@ -303,54 +292,52 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                                   </DialogTrigger>
                                   <DialogContent className="max-w-2xl">
                                     <DialogHeader>
-                                      <DialogTitle>Dados Bancários - {payloadData?.tradeName}</DialogTitle>
+                                      <DialogTitle>Dados Bancários - {request.clienteNome}</DialogTitle>
                                     </DialogHeader>
-                                    {payloadData?.bank && (
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Nome do Banco</Label>
-                                          <p className="font-medium">{payloadData.bank.bankName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Número do Banco</Label>
-                                          <p className="font-medium">{payloadData.bank.bankNumber || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Agência</Label>
-                                          <p className="font-medium">{payloadData.bank.agency || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Conta</Label>
-                                          <p className="font-medium">{payloadData.bank.account || 'N/A'}-{payloadData.bank.accountDigit || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Tipo da Chave PIX</Label>
-                                          <p className="font-medium">{payloadData.bank.pixKeyType?.toUpperCase() || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Chave PIX</Label>
-                                          <p className="font-medium font-mono text-sm">{payloadData.bank.pixKey || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Nome do Beneficiário</Label>
-                                          <p className="font-medium">{payloadData.bank.holderName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                          <Label className="text-sm font-medium text-muted-foreground">Documento do Beneficiário</Label>
-                                          <p className="font-medium">{payloadData.bank.holderDocument || 'N/A'}</p>
-                                        </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Nome do Banco</Label>
+                                        <p className="font-medium">{request.dadosBancarios.nomeBanco}</p>
                                       </div>
-                                    )}
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Número do Banco</Label>
+                                        <p className="font-medium">{request.dadosBancarios.numeroBanco}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Agência</Label>
+                                        <p className="font-medium">{request.dadosBancarios.agencia}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Conta</Label>
+                                        <p className="font-medium">{request.dadosBancarios.conta}-{request.dadosBancarios.digitoConta}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Tipo da Chave PIX</Label>
+                                        <p className="font-medium">{request.dadosBancarios.tipoChave}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Chave PIX</Label>
+                                        <p className="font-medium font-mono text-sm">{request.dadosBancarios.chavePix}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Nome do Beneficiário</Label>
+                                        <p className="font-medium">{request.dadosBancarios.nomeBeneficiario}</p>
+                                      </div>
+                                      <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">Documento do Beneficiário</Label>
+                                        <p className="font-medium">{request.dadosBancarios.documentoBeneficiario}</p>
+                                      </div>
+                                    </div>
                                     <div className="flex justify-end gap-2 mt-6">
                                       <Button 
                                         variant="destructive" 
-                                        onClick={() => rejectRequest(request.originId)}
+                                        onClick={() => handlePixAction(request.id, 'reject')}
                                       >
                                         <XCircle className="w-4 h-4 mr-1" />
                                         Rejeitar
                                       </Button>
                                       <Button 
-                                        onClick={() => approveRequest(request.originId)}
+                                        onClick={() => handlePixAction(request.id, 'approve')}
                                       >
                                         <CheckCircle className="w-4 h-4 mr-1" />
                                         Aprovar
@@ -359,10 +346,9 @@ const Credenciamentos = ({ user }: CredenciamentosProps) => {
                                   </DialogContent>
                                 </Dialog>
                               </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })
+                          </TableCell>
+                        </TableRow>
+                      ))
                     )}
                   </TableBody>
                 </Table>
