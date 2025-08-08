@@ -933,5 +933,3 @@ const Cadastro = ({
 export default Cadastro;
 //atualizaçãov19
 
-console.log("teste");
-
